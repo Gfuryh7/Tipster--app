@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tipster</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: linear-gradient(to bottom, #0a0f2c, #000);
+      color: white;
+    }
+    header {
+      text-align: center;
+      padding: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .matches {
+      padding: 20px;
+    }
+    .match {
+      background: #1c1f3a;
+      margin-bottom: 10px;
+      padding: 15px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .selected {
+      border: 2px solid #00ff99;
+    }
+    button {
+      width: 90%;
+      margin: 20px;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: #00ff99;
+      color: black;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .result {
+      padding: 20px;
+      background: #111;
+      margin: 20px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<header>🃏 Tipster</header>
+
+<div class="matches" id="matches"></div>
+
+<button onclick="generateSlip()">Generate Safe Slip</button>
+
+<div class="result" id="result"></div>
+
+<script>
+  const matches = [
+    "Arsenal vs Chelsea",
+    "Barcelona vs Sevilla",
+    "Bayern vs Dortmund",
+    "Man City vs Liverpool",
+    "PSG vs Lyon"
+  ];
+
+  const container = document.getElementById("matches");
+
+  matches.forEach(match => {
+    const div = document.createElement("div");
+    div.className = "match";
+    div.innerText = match;
+
+    div.onclick = () => {
+      div.classList.toggle("selected");
+    };
+
+    container.appendChild(div);
+  });
+
+  function generateSlip() {
+    const selected = document.querySelectorAll(".selected");
+
+    if (selected.length === 0) {
+      alert("Select at least one match");
+      return;
+    }
+
+    let resultText = "🧾 Tipster Slip:\n\n";
+
+    selected.forEach(match => {
+      const choice = getPrediction();
+      resultText += match.innerText + " → " + choice + "\n";
+    });
+
+    document.getElementById("result").innerText = resultText;
+  }
+
+  function getPrediction() {
+    const options = [
+      "Over 1.5 Goals",
+      "Double Chance",
+      "Both Teams To Score"
+    ];
+    return options[Math.floor(Math.random() * options.length)];
+  }
+</script>
+
+</body>
+</html>
