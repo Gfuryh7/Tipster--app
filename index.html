@@ -117,26 +117,30 @@
     container.appendChild(div);
   });
 
-  // 3. BRAIN: The logic that replaces "Random"
+  // 3. BRAIN: The logic that replaces "
   function getSmartPrediction(matchText) {
     const teams = matchText.split(" vs ");
     const homeTeam = teams[0];
     const awayTeam = teams[1];
 
-    // Get strengths or use 75 as average
     const hStr = teamData[homeTeam] || 75;
     const aStr = teamData[awayTeam] || 75;
     const diff = hStr - aStr;
 
+    // --- NEW: Calculate Probability ---
+    // We start at 50% and add/subtract based on the strength difference
+    let probability = 50 + (diff * 2); 
+    if (probability > 95) probability = 95; // Cap it so it's never 100% (nothing is 100% in betting!)
+    if (probability < 5) probability = 5;
+
     if (diff > 7) {
-      return { pick: "Home Win (1)", reason: `${homeTeam} is statistically much stronger.` };
+      return { pick: "Home Win (1)", reason: `${homeTeam} is dominant.`, chance: probability + "%" };
     } else if (diff < -7) {
-      return { pick: "Away Win (2)", reason: `The advantage lies with ${awayTeam} today.` };
+      return { pick: "Away Win (2)", reason: `${awayTeam} is the favorite.`, chance: (100 - probability) + "%" };
     } else {
-      return { pick: "Over 1.5 Goals", reason: "Expect a tight game with attacking play." };
+      return { pick: "Over 1.5 Goals", reason: "Expect a high-scoring, tight match.", chance: "70%" };
     }
   }
-
   // 4. GENERATOR: Runs when button is clicked
   function generateSlip() {
     const selectedMatches = document.querySelectorAll(".selected");
