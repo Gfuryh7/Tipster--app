@@ -7,64 +7,39 @@
 <style>
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: Arial;
   background: linear-gradient(to bottom, #f4f6f9, #dfe6ee);
 }
 
 /* HEADER */
 header {
   text-align: center;
-  padding: 18px;
-  font-size: 22px;
+  padding: 15px;
   font-weight: bold;
   background: white;
-  border-bottom: 1px solid #ddd;
 }
 
-/* SCREENS */
-.screen {
-  display: none;
-  padding-bottom: 80px;
-}
-.active {
-  display: block;
-}
-
-/* MATCH CARDS */
+/* MATCHES */
 .match {
   background: white;
   margin: 10px;
-  padding: 14px;
+  padding: 15px;
   border-radius: 10px;
-  text-align: center;
-  border: 1px solid #ddd;
 }
 .selected {
-  border: 2px solid #28a745;
-  background: #f0fff4;
+  border: 2px solid green;
 }
 
 /* BUTTON */
 button {
   width: 90%;
-  margin: 15px auto;
+  margin: 10px auto;
   display: block;
-  padding: 14px;
-  background: #28a745;
+  padding: 12px;
+  background: green;
   color: white;
   border: none;
   border-radius: 8px;
-  font-weight: bold;
-}
-
-/* INPUT */
-input {
-  width: 85%;
-  margin: 10px auto;
-  display: block;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
 }
 
 /* RESULT */
@@ -83,16 +58,12 @@ input {
   background: white;
   display: flex;
   justify-content: space-around;
-  padding: 10px 0;
+  padding: 15px;
+  font-size: 16px;
   border-top: 1px solid #ccc;
 }
-.nav-btn {
-  font-size: 14px;
-  cursor: pointer;
-}
-.active-tab {
-  color: #28a745;
-  font-weight: bold;
+.active {
+  color: green;
 }
 </style>
 </head>
@@ -101,47 +72,36 @@ input {
 
 <header>🃏 TIPSTER</header>
 
-<!-- MATCH SCREEN -->
-<div id="matchesScreen" class="screen active">
-  <input type="number" id="oddsInput" placeholder="Enter target odds (e.g. 5 or 10)">
-  <div id="matches"></div>
-  <button onclick="generateSlip()">Generate Smart Slip</button>
-</div>
+<input id="targetOdds" placeholder="Enter target odds (e.g. 5)" />
 
-<!-- SLIP SCREEN -->
-<div id="slipScreen" class="screen">
-  <div class="result" id="result">Your slip will appear here...</div>
-</div>
+<div id="matches"></div>
 
-<!-- NAVBAR -->
+<button onclick="generate()">Generate Slip</button>
+
+<div id="result" class="result"></div>
+
 <div class="navbar">
-  <div id="tab1" class="nav-btn active-tab" onclick="switchTab('matchesScreen', 'tab1')">Matches</div>
-  <div id="tab2" class="nav-btn" onclick="switchTab('slipScreen', 'tab2')">Slip</div>
+  <div>Matches</div>
+  <div>Slip</div>
 </div>
 
 <script>
 
-// TEAMS
+// TEAM POWER
 const teams = {
   "Arsenal": 90,
   "Wolves": 75,
   "Man City": 95,
-  "Liverpool": 92,
-  "Barcelona": 89,
-  "Sevilla": 80,
-  "Real Madrid": 93,
-  "Valencia": 79
+  "Liverpool": 92
 };
 
 // MATCHES
 const matches = [
-  "EPL • Arsenal vs Wolves",
-  "EPL • Man City vs Liverpool",
-  "La Liga • Barcelona vs Sevilla",
-  "La Liga • Real Madrid vs Valencia"
+  "Arsenal vs Wolves",
+  "Man City vs Liverpool"
 ];
 
-// LOAD MATCHES
+// DISPLAY
 const container = document.getElementById("matches");
 
 matches.forEach(m => {
@@ -152,59 +112,64 @@ matches.forEach(m => {
   container.appendChild(div);
 });
 
-// NAVIGATION
-function switchTab(screen, tab) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(screen).classList.add("active");
-
-  document.querySelectorAll(".nav-btn").forEach(t => t.classList.remove("active-tab"));
-  document.getElementById(tab).classList.add("active-tab");
-}
-
-// PREDICTION
-function predict(text) {
-  const game = text.split("• ")[1];
-  const [home, away] = game.split(" vs ");
-
-  const diff = (teams[home] || 75) - (teams[away] || 75);
+// SMART PICKS WITH ODDS
+function getOptions(match) {
+  const [home, away] = match.split(" vs ");
+  const diff = (teams[home]||75) - (teams[away]||75);
 
   let options = [];
 
-  options.push(`${home} Over 0.5 Goals`);
-  options.push("Over 1.5 Goals");
+  options.push({pick: `${home} Over 0.5`, odds: 1.25});
+  options.push({pick: "Over 1.5", odds: 1.35});
 
-  if (diff > 5) options.push(`${home} Double Chance`);
-  if (Math.abs(diff) < 5) options.push("Both Teams To Score");
-  if (diff > 8) options.push(`${home} Win`);
+  if(diff > 5) {
+    options.push({pick: `${home} Double Chance`, odds: 1.40});
+  }
+
+  if(diff > 8) {
+    options.push({pick: `${home} Win`, odds: 1.60});
+  }
 
   return options;
 }
 
 // GENERATE
-function generateSlip() {
+function generate() {
   const selected = document.querySelectorAll(".selected");
+  const target = parseFloat(document.getElementById("targetOdds").value);
 
-  if (!selected.length) {
-    alert("Select matches first");
-    return;
-  }
-
-  let html = "<h3>📋 YOUR SMART SLIP</h3>";
+  let totalOdds = 1;
+  let html = "<h3>📋 BET SLIP</h3>";
 
   selected.forEach(m => {
-    html += `<b>${m.innerText}</b><br>`;
-    predict(m.innerText).forEach(p => {
-      html += `• ${p}<br>`;
-    });
-    html += "<br>";
+    const options = getOptions(m.innerText);
+
+    const best = options[0]; // safest
+    totalOdds *= best.odds;
+
+    html += `
+      <b>${m.innerText}</b><br>
+      ${best.pick} (Odds: ${best.odds})<br><br>
+    `;
   });
 
-  document.getElementById("result").innerHTML = html;
+  html += `<hr><b>Total Odds: ${totalOdds.toFixed(2)}</b>`;
 
-  switchTab("slipScreen", "tab2");
+  if(target) {
+    html += `<br>Target: ${target}`;
+  }
+
+  document.getElementById("result").innerHTML = html;
+}
+
+// SIMPLE AI
+function explain() {
+  alert("These picks are chosen based on safest scoring probability and team strength.");
 }
 
 </script>
+
+<button onclick="explain()">Ask AI 🤖</button>
 
 </body>
 </html>
