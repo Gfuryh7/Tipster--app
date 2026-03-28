@@ -1,171 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Tipster</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to bottom, #0a0f2c, #000);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    header {
-      text-align: center;
-      padding: 30px;
-      font-size: 32px;
-      font-weight: bold;
-      letter-spacing: 2px;
-    }
-    .matches {
-      width: 90%;
-      max-width: 500px;
-      padding: 10px;
-    }
-    .match {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      margin-bottom: 12px;
-      padding: 18px;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: 0.3s;
-      text-align: center;
-    }
-    .match:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-    .selected {
-      border: 2px solid #00ff99;
-      background: rgba(0, 255, 153, 0.1);
-    }
-    button {
-      width: 90%;
-      max-width: 500px;
-      margin: 20px;
-      padding: 18px;
-      border: none;
-      border-radius: 12px;
-      background: #00ff99;
-      color: black;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0, 255, 153, 0.3);
-    }
-    .result {
-      width: 85%;
-      max-width: 480px;
-      padding: 20px;
-      background: #111;
-      border-top: 4px solid #00ff99;
-      margin: 20px;
-      border-radius: 12px;
-      min-height: 50px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Tipster</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom, #0a0f2c, #000);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+header {
+  padding: 25px;
+  font-size: 28px;
+  font-weight: bold;
+}
+.matches {
+  width: 90%;
+  max-width: 500px;
+}
+.match {
+  background: rgba(255,255,255,0.05);
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+.selected {
+  border: 2px solid #00ff99;
+}
+button {
+  width: 90%;
+  max-width: 500px;
+  padding: 15px;
+  margin: 20px;
+  background: #00ff99;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+}
+.result {
+  width: 90%;
+  max-width: 500px;
+  background: #111;
+  padding: 15px;
+  border-radius: 10px;
+}
+</style>
 </head>
+
 <body>
 
 <header>🃏 TIPSTER</header>
 
-<div class="matches" id="matches-container"></div>
+<div class="matches" id="matches"></div>
 
-<button onclick="generateSlip()">Generate Safe Slip</button>
+<button onclick="generateSlip()">Generate Smart Slip</button>
 
-<div class="result" id="result-display">
-  <span style="color: #666;">Select matches above to generate a slip...</span>
-</div>
+<div class="result" id="result"></div>
 
 <script>
-  // 1. DATABASE: Strengths of the teams
-  const teamData = {
-    "Arsenal": 88,
-    "Man City": 92,
-    "Liverpool": 89,
-    "Chelsea": 80,
-    "Barcelona": 87,
-    "Sevilla": 78,
-    "Bayern": 91,
-    "Dortmund": 84,
-    "PSG": 89,
-    "Lyon": 77
-  };
 
-  // 2. MATCH LIST: The games showing on screen
-  const matches = [
-    "Arsenal vs Chelsea",
-    "Barcelona vs Sevilla",
-    "Bayern vs Dortmund",
-    "Man City vs Liverpool",
-    "PSG vs Lyon"
-  ];
+// 🔥 TEAM POWER DATABASE (simulate real stats)
+const teams = {
+  "Man City": 95,
+  "Arsenal": 90,
+  "Liverpool": 92,
+  "Chelsea": 82,
+  "Barcelona": 89,
+  "Real Madrid": 93,
+  "Sevilla": 80,
+  "Bayern": 94,
+  "Dortmund": 86,
+  "PSG": 91,
+  "Lyon": 78
+};
 
-  const container = document.getElementById("matches-container");
+// 🌍 MATCHES (simulate real leagues)
+const matches = [
+  { league: "EPL", game: "Man City vs Liverpool" },
+  { league: "EPL", game: "Arsenal vs Chelsea" },
+  { league: "La Liga", game: "Barcelona vs Sevilla" },
+  { league: "La Liga", game: "Real Madrid vs Valencia" },
+  { league: "Bundesliga", game: "Bayern vs Dortmund" },
+  { league: "UCL", game: "PSG vs Bayern" }
+];
 
-  // Create the match boxes
-  matches.forEach(matchName => {
-    const div = document.createElement("div");
-    div.className = "match";
-    div.innerText = matchName;
-    div.onclick = () => {
-      div.classList.toggle("selected");
+const container = document.getElementById("matches");
+
+// 🧱 DISPLAY MATCHES
+matches.forEach(m => {
+  const div = document.createElement("div");
+  div.className = "match";
+  div.innerText = `${m.league} • ${m.game}`;
+  div.onclick = () => div.classList.toggle("selected");
+  container.appendChild(div);
+});
+
+// 🧠 SMART ENGINE
+function predict(matchText) {
+  const game = matchText.split("• ")[1];
+  const [home, away] = game.split(" vs ");
+
+  const h = teams[home] || 75;
+  const a = teams[away] || 75;
+  const diff = h - a;
+
+  // Probability
+  let probability = 50 + diff * 1.5;
+  probability = Math.max(5, Math.min(95, probability));
+
+  if (diff > 10) {
+    return {
+      pick: `${home} Win`,
+      reason: `${home} is much stronger`,
+      odds: "1.40",
+      chance: probability + "%"
     };
-    container.appendChild(div);
+  }
+
+  if (diff > 5) {
+    return {
+      pick: `${home} Win or Over 1.5`,
+      reason: `${home} has advantage`,
+      odds: "1.65",
+      chance: probability + "%"
+    };
+  }
+
+  if (Math.abs(diff) <= 5) {
+    return {
+      pick: "Over 2.5 Goals",
+      reason: "Balanced strong teams → goals likely",
+      odds: "1.80",
+      chance: "65%"
+    };
+  }
+
+  return {
+    pick: `${away} Win or Double Chance`,
+    reason: `${away} slightly stronger`,
+    odds: "1.75",
+    chance: (100 - probability) + "%"
+  };
+}
+
+// 🎯 GENERATE SLIP
+function generateSlip() {
+  const selected = document.querySelectorAll(".selected");
+
+  if (selected.length === 0) {
+    alert("Select matches first");
+    return;
+  }
+
+  let html = "<h3>📋 SMART BET SLIP</h3>";
+
+  selected.forEach(m => {
+    const res = predict(m.innerText);
+
+    html += `
+      <div style="margin-bottom:10px;border-bottom:1px solid #333;">
+        <small>${m.innerText}</small><br>
+        <b style="color:#00ff99">${res.pick}</b><br>
+        <small>${res.reason}</small><br>
+        <small>Odds: ${res.odds} | Chance: ${res.chance}</small>
+      </div>
+    `;
   });
 
-  // 3. BRAIN: The logic that replaces "
-  function getSmartPrediction(matchText) {
-    const teams = matchText.split(" vs ");
-    const homeTeam = teams[0];
-    const awayTeam = teams[1];
+  document.getElementById("result").innerHTML = html;
+}
 
-    const hStr = teamData[homeTeam] || 75;
-    const aStr = teamData[awayTeam] || 75;
-    const diff = hStr - aStr;
-
-    // --- NEW: Calculate Probability ---
-    // We start at 50% and add/subtract based on the strength difference
-    let probability = 50 + (diff * 2); 
-    if (probability > 95) probability = 95; // Cap it so it's never 100% (nothing is 100% in betting!)
-    if (probability < 5) probability = 5;
-
-    if (diff > 7) {
-      return { pick: "Home Win (1)", reason: `${homeTeam} is dominant.`, chance: probability + "%" };
-    } else if (diff < -7) {
-      return { pick: "Away Win (2)", reason: `${awayTeam} is the favorite.`, chance: (100 - probability) + "%" };
-    } else {
-      return { pick: "Over 1.5 Goals", reason: "Expect a high-scoring, tight match.", chance: "70%" };
-    }
-  }
-  // 4. GENERATOR: Runs when button is clicked
-  function generateSlip() {
-    const selectedMatches = document.querySelectorAll(".selected");
-
-    if (selectedMatches.length === 0) {
-      alert("Please select at least one match first!");
-      return;
-    }
-
-    let finalHTML = "<h3 style='margin-top:0;'>📋 YOUR SMART SLIP</h3>";
-
-    selectedMatches.forEach(item => {
-      const result = getSmartPrediction(item.innerText);
-      
-      finalHTML += `
-        <div style="margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">
-          <div style="font-size: 0.9em; color: #888;">${item.innerText}</div>
-          <div style="font-weight: bold; color: #00ff99;">${result.pick}</div>
-          <div style="font-size: 0.8em; font-style: italic; color: #aaa;">" ${result.reason} "</div>
-        </div>
-      `;
-    });
-
-    document.getElementById("result-display").innerHTML = finalHTML;
-  }
 </script>
 
 </body>
