@@ -11,19 +11,16 @@ body {
   background: linear-gradient(to bottom, #f4f6f9, #dfe6ee);
 }
 
-/* HEADER */
 header {
   text-align: center;
   padding: 15px;
-  font-weight: bold;
   background: white;
+  font-weight: bold;
 }
 
-/* SCREENS */
 .screen { display: none; padding-bottom: 80px; }
 .active { display: block; }
 
-/* MATCH */
 .match {
   background: white;
   margin: 10px;
@@ -31,7 +28,6 @@ header {
   border-radius: 10px;
 }
 
-/* OPTIONS */
 .option {
   padding: 5px;
   margin: 5px 0;
@@ -43,19 +39,6 @@ header {
   border: 1px solid green;
 }
 
-/* BUTTON */
-button {
-  width: 90%;
-  margin: 10px auto;
-  display: block;
-  padding: 12px;
-  background: green;
-  color: white;
-  border: none;
-  border-radius: 8px;
-}
-
-/* NAVBAR */
 .navbar {
   position: fixed;
   bottom: 0;
@@ -65,10 +48,10 @@ button {
   justify-content: space-around;
   padding: 15px;
 }
+
 .nav-btn { cursor: pointer; }
 .active-tab { color: green; }
 
-/* CHAT */
 .chatbox {
   background: white;
   margin: 10px;
@@ -84,9 +67,8 @@ button {
 
 <!-- MATCHES -->
 <div id="matchesScreen" class="screen active">
-  <input id="targetOdds" placeholder="Target odds (e.g. 5)" />
+  <p style="text-align:center;" id="loading">Loading matches...</p>
   <div id="matches"></div>
-  <button onclick="goToSlip()">View Slip</button>
 </div>
 
 <!-- SLIP -->
@@ -97,14 +79,13 @@ button {
 <!-- CHAT -->
 <div id="chatScreen" class="screen">
   <div class="chatbox">
-    <p><b>AI:</b> Ask me about your bets 👇</p>
-    <input id="chatInput" placeholder="Type question..." />
+    <input id="chatInput" placeholder="Ask something..." />
     <button onclick="chat()">Send</button>
     <div id="chatOutput"></div>
   </div>
 </div>
 
-<!-- NAVBAR -->
+<!-- NAV -->
 <div class="navbar">
   <div class="nav-btn active-tab" onclick="show('matchesScreen', this)">Matches</div>
   <div class="nav-btn" onclick="show('slipScreen', this)">Slip</div>
@@ -113,50 +94,65 @@ button {
 
 <script>
 
-// DATA
+let selections = {};
+
+// 🧠 FAKE API (SIMULATED RESPONSE)
+function fetchMatches() {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve([
+        {home:"Arsenal", away:"Wolves"},
+        {home:"Man City", away:"Liverpool"},
+        {home:"Barcelona", away:"Sevilla"},
+        {home:"Real Madrid", away:"Valencia"},
+        {home:"Bayern", away:"Dortmund"},
+        {home:"PSG", away:"Lyon"}
+      ]);
+    }, 1000);
+  });
+}
+
+// TEAM DATA
 const teams = {
   "Arsenal": 90,"Wolves":75,"Man City":95,"Liverpool":92,
   "Barcelona":89,"Sevilla":80,"Real Madrid":93,"Valencia":79,
   "Bayern":94,"Dortmund":86,"PSG":91,"Lyon":78
 };
 
-const games = [
-  "Arsenal vs Wolves","Man City vs Liverpool",
-  "Barcelona vs Sevilla","Real Madrid vs Valencia",
-  "Bayern vs Dortmund","PSG vs Lyon"
-];
+// LOAD MATCHES
+async function loadMatches() {
+  const data = await fetchMatches();
+  document.getElementById("loading").style.display = "none";
 
-let selections = {};
+  const container = document.getElementById("matches");
 
-// DISPLAY MATCHES
-const container = document.getElementById("matches");
+  data.forEach(m => {
+    const game = `${m.home} vs ${m.away}`;
 
-games.forEach(game => {
-  const div = document.createElement("div");
-  div.className = "match";
+    const div = document.createElement("div");
+    div.className = "match";
+    div.innerHTML = `<b>${game}</b>`;
 
-  const title = `<b>${game}</b><br>`;
-  div.innerHTML = title;
+    const options = getOptions(game);
 
-  const options = getOptions(game);
+    options.forEach(opt => {
+      const o = document.createElement("div");
+      o.className = "option";
+      o.innerText = `${opt.pick} (${opt.odds})`;
 
-  options.forEach(opt => {
-    const o = document.createElement("div");
-    o.className = "option";
-    o.innerText = `${opt.pick} (${opt.odds})`;
+      o.onclick = () => {
+        selections[game] = opt;
+        document.querySelectorAll(`[data-game="${game}"]`).forEach(x=>x.classList.remove("selected"));
+        o.classList.add("selected");
+      };
 
-    o.onclick = () => {
-      selections[game] = opt;
-      document.querySelectorAll(`[data-game="${game}"]`).forEach(x=>x.classList.remove("selected"));
-      o.classList.add("selected");
-    };
+      o.setAttribute("data-game", game);
+      div.appendChild(o);
+    });
 
-    o.setAttribute("data-game", game);
-    div.appendChild(o);
+    container.appendChild(div);
   });
-
-  container.appendChild(div);
-});
+}
 
 // OPTIONS ENGINE
 function getOptions(game) {
@@ -187,10 +183,6 @@ function show(id,el){
 }
 
 // SLIP
-function goToSlip(){
-  show("slipScreen", document.querySelectorAll(".nav-btn")[1]);
-}
-
 function updateSlip(){
   let html="<h3>📋 YOUR SLIP</h3>";
   let total=1;
@@ -198,7 +190,6 @@ function updateSlip(){
   Object.keys(selections).forEach(game=>{
     let s=selections[game];
     total*=s.odds;
-
     html+=`<b>${game}</b><br>${s.pick} (${s.odds})<br><br>`;
   });
 
@@ -206,17 +197,14 @@ function updateSlip(){
   document.getElementById("slip").innerHTML=html;
 }
 
-// AI CHAT
+// AI
 function chat(){
   let q=document.getElementById("chatInput").value;
-  let res="";
-
-  if(q.includes("safe")) res="Pick Over 1.5 or Double Chance";
-  else if(q.includes("win")) res="Stronger team has higher probability";
-  else res="Focus on low-risk markets";
-
-  document.getElementById("chatOutput").innerHTML=`<p><b>AI:</b> ${res}</p>`;
+  document.getElementById("chatOutput").innerHTML=`AI: Focus on safer bets like Over 1.5`;
 }
+
+// INIT
+loadMatches();
 
 </script>
 
