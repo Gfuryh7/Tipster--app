@@ -8,15 +8,17 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: linear-gradient(180deg, #f5f7fa 0%, #dbe2ef 50%, #0a0f2c 100%);
+  background: linear-gradient(to bottom, #f4f6f9, #dfe6ee);
 }
 
 /* HEADER */
 header {
   text-align: center;
-  padding: 20px;
-  font-size: 26px;
+  padding: 18px;
+  font-size: 22px;
   font-weight: bold;
+  background: white;
+  border-bottom: 1px solid #ddd;
 }
 
 /* SCREENS */
@@ -28,36 +30,47 @@ header {
   display: block;
 }
 
-/* MATCH BOX */
+/* MATCH CARDS */
 .match {
   background: white;
   margin: 10px;
-  padding: 15px;
+  padding: 14px;
   border-radius: 10px;
   text-align: center;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
 }
 .selected {
-  border: 2px solid #00cc66;
-  background: #eafff3;
+  border: 2px solid #28a745;
+  background: #f0fff4;
 }
 
 /* BUTTON */
 button {
   width: 90%;
-  margin: 20px auto;
+  margin: 15px auto;
   display: block;
-  padding: 15px;
-  background: #00cc66;
+  padding: 14px;
+  background: #28a745;
+  color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   font-weight: bold;
+}
+
+/* INPUT */
+input {
+  width: 85%;
+  margin: 10px auto;
+  display: block;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 
 /* RESULT */
 .result {
   background: white;
-  margin: 15px;
+  margin: 10px;
   padding: 15px;
   border-radius: 10px;
 }
@@ -70,12 +83,16 @@ button {
   background: white;
   display: flex;
   justify-content: space-around;
-  padding: 12px 0;
+  padding: 10px 0;
   border-top: 1px solid #ccc;
 }
 .nav-btn {
-  font-weight: bold;
+  font-size: 14px;
   cursor: pointer;
+}
+.active-tab {
+  color: #28a745;
+  font-weight: bold;
 }
 </style>
 </head>
@@ -86,6 +103,7 @@ button {
 
 <!-- MATCH SCREEN -->
 <div id="matchesScreen" class="screen active">
+  <input type="number" id="oddsInput" placeholder="Enter target odds (e.g. 5 or 10)">
   <div id="matches"></div>
   <button onclick="generateSlip()">Generate Smart Slip</button>
 </div>
@@ -97,8 +115,8 @@ button {
 
 <!-- NAVBAR -->
 <div class="navbar">
-  <div class="nav-btn" onclick="showScreen('matchesScreen')">Matches</div>
-  <div class="nav-btn" onclick="showScreen('slipScreen')">Slip</div>
+  <div id="tab1" class="nav-btn active-tab" onclick="switchTab('matchesScreen', 'tab1')">Matches</div>
+  <div id="tab2" class="nav-btn" onclick="switchTab('slipScreen', 'tab2')">Slip</div>
 </div>
 
 <script>
@@ -135,9 +153,12 @@ matches.forEach(m => {
 });
 
 // NAVIGATION
-function showScreen(id) {
+function switchTab(screen, tab) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+  document.getElementById(screen).classList.add("active");
+
+  document.querySelectorAll(".nav-btn").forEach(t => t.classList.remove("active-tab"));
+  document.getElementById(tab).classList.add("active-tab");
 }
 
 // PREDICTION
@@ -168,7 +189,7 @@ function generateSlip() {
     return;
   }
 
-  let html = "<h3>📋 YOUR SLIP</h3>";
+  let html = "<h3>📋 YOUR SMART SLIP</h3>";
 
   selected.forEach(m => {
     html += `<b>${m.innerText}</b><br>`;
@@ -180,8 +201,7 @@ function generateSlip() {
 
   document.getElementById("result").innerHTML = html;
 
-  // SWITCH SCREEN
-  showScreen("slipScreen");
+  switchTab("slipScreen", "tab2");
 }
 
 </script>
