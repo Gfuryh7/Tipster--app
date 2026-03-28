@@ -8,60 +8,81 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: radial-gradient(circle at top, #0a0f2c, #000);
-  color: white;
+  background: linear-gradient(to bottom, #e8ecf5, #cfd8e3, #0a0f2c);
+  color: black;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 header {
-  padding: 25px;
-  font-size: 28px;
+  padding: 20px;
+  font-size: 26px;
   font-weight: bold;
 }
 
-.matches {
-  width: 90%;
+/* SCREENS */
+.screen {
+  display: none;
+  width: 100%;
   max-width: 500px;
 }
 
-.match {
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-  padding: 15px;
-  margin-bottom: 12px;
-  border-radius: 12px;
-  text-align: center;
-  cursor: pointer;
-  transition: 0.3s;
+.active {
+  display: block;
 }
 
-.match:hover {
-  transform: scale(1.02);
+/* MATCHES */
+.match {
+  background: white;
+  margin: 10px;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid #ddd;
 }
 
 .selected {
-  border: 2px solid #00ff99;
+  border: 2px solid #00cc66;
+  background: #eafff3;
 }
 
+/* BUTTON */
 button {
   width: 90%;
-  max-width: 500px;
+  margin: 15px;
   padding: 15px;
-  margin: 20px;
-  background: #00ff99;
+  background: #00cc66;
   border: none;
   border-radius: 10px;
   font-weight: bold;
 }
 
+/* RESULT */
 .result {
-  width: 90%;
-  max-width: 500px;
-  background: #111;
+  background: white;
+  margin: 15px;
   padding: 15px;
   border-radius: 10px;
+}
+
+/* TASKBAR */
+.navbar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  justify-content: space-around;
+  background: white;
+  padding: 10px 0;
+  border-top: 1px solid #ccc;
+}
+
+.nav-btn {
+  font-weight: bold;
+  cursor: pointer;
 }
 </style>
 </head>
@@ -70,15 +91,26 @@ button {
 
 <header>🃏 TIPSTER</header>
 
-<div class="matches" id="matches"></div>
+<!-- MATCH SCREEN -->
+<div id="matchesScreen" class="screen active">
+  <div id="matches"></div>
+  <button onclick="generateSlip()">Generate Smart Slip</button>
+</div>
 
-<button onclick="generateSlip()">Generate Smart Slip</button>
+<!-- SLIP SCREEN -->
+<div id="slipScreen" class="screen">
+  <div class="result" id="result"></div>
+</div>
 
-<div class="result" id="result"></div>
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="nav-btn" onclick="showScreen('matchesScreen')">Matches</div>
+  <div class="nav-btn" onclick="showScreen('slipScreen')">Slip</div>
+</div>
 
 <script>
 
-// 🔥 TEAM STRENGTH (simulated stats)
+// TEAM STRENGTH
 const teams = {
   "Man City": 95,
   "Arsenal": 90,
@@ -95,7 +127,7 @@ const teams = {
   "Valencia": 79
 };
 
-// 🌍 MATCHES
+// MATCHES
 const matches = [
   { league: "EPL", game: "Arsenal vs Wolves" },
   { league: "EPL", game: "Man City vs Liverpool" },
@@ -107,6 +139,7 @@ const matches = [
 
 const container = document.getElementById("matches");
 
+// DISPLAY MATCHES
 matches.forEach(m => {
   const div = document.createElement("div");
   div.className = "match";
@@ -115,7 +148,13 @@ matches.forEach(m => {
   container.appendChild(div);
 });
 
-// 🧠 SMART ENGINE WITH MULTIPLE OPTIONS
+// NAVIGATION
+function showScreen(screenId) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(screenId).classList.add("active");
+}
+
+// SMART PREDICTION
 function predict(matchText) {
   const game = matchText.split("• ")[1];
   const [home, away] = game.split(" vs ");
@@ -126,20 +165,18 @@ function predict(matchText) {
 
   let options = [];
 
-  // SAFEST OPTIONS
   options.push({
     type: "SAFE",
     pick: `${home} Over 0.5 Goals`,
-    reason: `${home} likely to score at least once`
+    reason: `${home} likely to score`
   });
 
   options.push({
     type: "SAFE",
     pick: "Over 1.5 Goals",
-    reason: "Most matches exceed 1 goal"
+    reason: "Most games exceed 1 goal"
   });
 
-  // MEDIUM RISK
   if (diff > 5) {
     options.push({
       type: "MEDIUM",
@@ -152,31 +189,22 @@ function predict(matchText) {
     options.push({
       type: "MEDIUM",
       pick: "Both Teams To Score",
-      reason: "Teams are evenly matched"
+      reason: "Balanced teams"
     });
   }
 
-  // HIGHER RISK
   if (diff > 8) {
     options.push({
       type: "RISKY",
       pick: `${home} Win`,
-      reason: `${home} clearly stronger`
-    });
-  }
-
-  if (diff < -8) {
-    options.push({
-      type: "RISKY",
-      pick: `${away} Win`,
-      reason: `${away} stronger side`
+      reason: `${home} stronger`
     });
   }
 
   return options;
 }
 
-// 🎯 GENERATE SLIP
+// GENERATE SLIP
 function generateSlip() {
   const selected = document.querySelectorAll(".selected");
 
@@ -185,7 +213,7 @@ function generateSlip() {
     return;
   }
 
-  let html = "<h3>📋 SMART BET OPTIONS</h3>";
+  let html = "<h3>📋 YOUR BET SLIP</h3>";
 
   selected.forEach(m => {
     const options = predict(m.innerText);
@@ -196,8 +224,7 @@ function generateSlip() {
     options.forEach(opt => {
       html += `
         <div style="margin:5px 0;">
-          <span style="color:#00ff99;">[${opt.type}]</span> 
-          ${opt.pick}<br>
+          <span style="color:green;">[${opt.type}]</span> ${opt.pick}<br>
           <small>${opt.reason}</small>
         </div>
       `;
@@ -207,6 +234,9 @@ function generateSlip() {
   });
 
   document.getElementById("result").innerHTML = html;
+
+  // AUTO SWITCH TO SLIP SCREEN
+  showScreen("slipScreen");
 }
 
 </script>
