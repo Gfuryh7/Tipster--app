@@ -19,15 +19,28 @@ header {
   background: white;
 }
 
-/* MATCHES */
+/* SCREENS */
+.screen { display: none; padding-bottom: 80px; }
+.active { display: block; }
+
+/* MATCH */
 .match {
   background: white;
   margin: 10px;
-  padding: 15px;
+  padding: 10px;
   border-radius: 10px;
 }
-.selected {
-  border: 2px solid green;
+
+/* OPTIONS */
+.option {
+  padding: 5px;
+  margin: 5px 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.option.selected {
+  background: #d4edda;
+  border: 1px solid green;
 }
 
 /* BUTTON */
@@ -42,14 +55,6 @@ button {
   border-radius: 8px;
 }
 
-/* RESULT */
-.result {
-  background: white;
-  margin: 10px;
-  padding: 15px;
-  border-radius: 10px;
-}
-
 /* NAVBAR */
 .navbar {
   position: fixed;
@@ -59,11 +64,16 @@ button {
   display: flex;
   justify-content: space-around;
   padding: 15px;
-  font-size: 16px;
-  border-top: 1px solid #ccc;
 }
-.active {
-  color: green;
+.nav-btn { cursor: pointer; }
+.active-tab { color: green; }
+
+/* CHAT */
+.chatbox {
+  background: white;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 10px;
 }
 </style>
 </head>
@@ -72,104 +82,143 @@ button {
 
 <header>🃏 TIPSTER</header>
 
-<input id="targetOdds" placeholder="Enter target odds (e.g. 5)" />
+<!-- MATCHES -->
+<div id="matchesScreen" class="screen active">
+  <input id="targetOdds" placeholder="Target odds (e.g. 5)" />
+  <div id="matches"></div>
+  <button onclick="goToSlip()">View Slip</button>
+</div>
 
-<div id="matches"></div>
+<!-- SLIP -->
+<div id="slipScreen" class="screen">
+  <div id="slip"></div>
+</div>
 
-<button onclick="generate()">Generate Slip</button>
+<!-- CHAT -->
+<div id="chatScreen" class="screen">
+  <div class="chatbox">
+    <p><b>AI:</b> Ask me about your bets 👇</p>
+    <input id="chatInput" placeholder="Type question..." />
+    <button onclick="chat()">Send</button>
+    <div id="chatOutput"></div>
+  </div>
+</div>
 
-<div id="result" class="result"></div>
-
+<!-- NAVBAR -->
 <div class="navbar">
-  <div>Matches</div>
-  <div>Slip</div>
+  <div class="nav-btn active-tab" onclick="show('matchesScreen', this)">Matches</div>
+  <div class="nav-btn" onclick="show('slipScreen', this)">Slip</div>
+  <div class="nav-btn" onclick="show('chatScreen', this)">Chat</div>
 </div>
 
 <script>
 
-// TEAM POWER
+// DATA
 const teams = {
-  "Arsenal": 90,
-  "Wolves": 75,
-  "Man City": 95,
-  "Liverpool": 92
+  "Arsenal": 90,"Wolves":75,"Man City":95,"Liverpool":92,
+  "Barcelona":89,"Sevilla":80,"Real Madrid":93,"Valencia":79,
+  "Bayern":94,"Dortmund":86,"PSG":91,"Lyon":78
 };
 
-// MATCHES
-const matches = [
-  "Arsenal vs Wolves",
-  "Man City vs Liverpool"
+const games = [
+  "Arsenal vs Wolves","Man City vs Liverpool",
+  "Barcelona vs Sevilla","Real Madrid vs Valencia",
+  "Bayern vs Dortmund","PSG vs Lyon"
 ];
 
-// DISPLAY
+let selections = {};
+
+// DISPLAY MATCHES
 const container = document.getElementById("matches");
 
-matches.forEach(m => {
+games.forEach(game => {
   const div = document.createElement("div");
   div.className = "match";
-  div.innerText = m;
-  div.onclick = () => div.classList.toggle("selected");
+
+  const title = `<b>${game}</b><br>`;
+  div.innerHTML = title;
+
+  const options = getOptions(game);
+
+  options.forEach(opt => {
+    const o = document.createElement("div");
+    o.className = "option";
+    o.innerText = `${opt.pick} (${opt.odds})`;
+
+    o.onclick = () => {
+      selections[game] = opt;
+      document.querySelectorAll(`[data-game="${game}"]`).forEach(x=>x.classList.remove("selected"));
+      o.classList.add("selected");
+    };
+
+    o.setAttribute("data-game", game);
+    div.appendChild(o);
+  });
+
   container.appendChild(div);
 });
 
-// SMART PICKS WITH ODDS
-function getOptions(match) {
-  const [home, away] = match.split(" vs ");
-  const diff = (teams[home]||75) - (teams[away]||75);
+// OPTIONS ENGINE
+function getOptions(game) {
+  const [home, away] = game.split(" vs ");
+  const diff = (teams[home]||75)-(teams[away]||75);
 
-  let options = [];
+  let ops = [];
 
-  options.push({pick: `${home} Over 0.5`, odds: 1.25});
-  options.push({pick: "Over 1.5", odds: 1.35});
+  ops.push({pick:`${home} Over 0.5`,odds:1.25});
+  ops.push({pick:"Over 1.5",odds:1.35});
 
-  if(diff > 5) {
-    options.push({pick: `${home} Double Chance`, odds: 1.40});
-  }
+  if(diff>5) ops.push({pick:`${home} Double Chance`,odds:1.40});
+  if(Math.abs(diff)<5) ops.push({pick:"BTTS",odds:1.60});
+  if(diff>8) ops.push({pick:`${home} Win`,odds:1.75});
 
-  if(diff > 8) {
-    options.push({pick: `${home} Win`, odds: 1.60});
-  }
-
-  return options;
+  return ops;
 }
 
-// GENERATE
-function generate() {
-  const selected = document.querySelectorAll(".selected");
-  const target = parseFloat(document.getElementById("targetOdds").value);
+// NAV
+function show(id,el){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 
-  let totalOdds = 1;
-  let html = "<h3>📋 BET SLIP</h3>";
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active-tab"));
+  el.classList.add("active-tab");
 
-  selected.forEach(m => {
-    const options = getOptions(m.innerText);
+  if(id==="slipScreen") updateSlip();
+}
 
-    const best = options[0]; // safest
-    totalOdds *= best.odds;
+// SLIP
+function goToSlip(){
+  show("slipScreen", document.querySelectorAll(".nav-btn")[1]);
+}
 
-    html += `
-      <b>${m.innerText}</b><br>
-      ${best.pick} (Odds: ${best.odds})<br><br>
-    `;
+function updateSlip(){
+  let html="<h3>📋 YOUR SLIP</h3>";
+  let total=1;
+
+  Object.keys(selections).forEach(game=>{
+    let s=selections[game];
+    total*=s.odds;
+
+    html+=`<b>${game}</b><br>${s.pick} (${s.odds})<br><br>`;
   });
 
-  html += `<hr><b>Total Odds: ${totalOdds.toFixed(2)}</b>`;
-
-  if(target) {
-    html += `<br>Target: ${target}`;
-  }
-
-  document.getElementById("result").innerHTML = html;
+  html+=`<hr><b>Total Odds: ${total.toFixed(2)}</b>`;
+  document.getElementById("slip").innerHTML=html;
 }
 
-// SIMPLE AI
-function explain() {
-  alert("These picks are chosen based on safest scoring probability and team strength.");
+// AI CHAT
+function chat(){
+  let q=document.getElementById("chatInput").value;
+  let res="";
+
+  if(q.includes("safe")) res="Pick Over 1.5 or Double Chance";
+  else if(q.includes("win")) res="Stronger team has higher probability";
+  else res="Focus on low-risk markets";
+
+  document.getElementById("chatOutput").innerHTML=`<p><b>AI:</b> ${res}</p>`;
 }
 
 </script>
-
-<button onclick="explain()">Ask AI 🤖</button>
 
 </body>
 </html>
