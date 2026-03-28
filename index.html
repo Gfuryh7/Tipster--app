@@ -8,14 +8,12 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom, #e8ecf5, #cfd8e3, #0a0f2c);
-  color: black;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  background: linear-gradient(180deg, #f5f7fa 0%, #dbe2ef 50%, #0a0f2c 100%);
 }
 
+/* HEADER */
 header {
+  text-align: center;
   padding: 20px;
   font-size: 26px;
   font-weight: bold;
@@ -24,25 +22,21 @@ header {
 /* SCREENS */
 .screen {
   display: none;
-  width: 100%;
-  max-width: 500px;
+  padding-bottom: 80px;
 }
-
 .active {
   display: block;
 }
 
-/* MATCHES */
+/* MATCH BOX */
 .match {
   background: white;
   margin: 10px;
   padding: 15px;
   border-radius: 10px;
   text-align: center;
-  cursor: pointer;
-  border: 1px solid #ddd;
+  border: 1px solid #ccc;
 }
-
 .selected {
   border: 2px solid #00cc66;
   background: #eafff3;
@@ -51,7 +45,8 @@ header {
 /* BUTTON */
 button {
   width: 90%;
-  margin: 15px;
+  margin: 20px auto;
+  display: block;
   padding: 15px;
   background: #00cc66;
   border: none;
@@ -67,19 +62,17 @@ button {
   border-radius: 10px;
 }
 
-/* TASKBAR */
+/* NAVBAR */
 .navbar {
   position: fixed;
   bottom: 0;
   width: 100%;
-  max-width: 500px;
+  background: white;
   display: flex;
   justify-content: space-around;
-  background: white;
-  padding: 10px 0;
+  padding: 12px 0;
   border-top: 1px solid #ccc;
 }
-
 .nav-btn {
   font-weight: bold;
   cursor: pointer;
@@ -99,7 +92,7 @@ button {
 
 <!-- SLIP SCREEN -->
 <div id="slipScreen" class="screen">
-  <div class="result" id="result"></div>
+  <div class="result" id="result">Your slip will appear here...</div>
 </div>
 
 <!-- NAVBAR -->
@@ -110,132 +103,84 @@ button {
 
 <script>
 
-// TEAM STRENGTH
+// TEAMS
 const teams = {
-  "Man City": 95,
   "Arsenal": 90,
-  "Liverpool": 92,
-  "Chelsea": 82,
-  "Barcelona": 89,
-  "Real Madrid": 93,
-  "Sevilla": 80,
-  "Bayern": 94,
-  "Dortmund": 86,
-  "PSG": 91,
-  "Lyon": 78,
   "Wolves": 75,
+  "Man City": 95,
+  "Liverpool": 92,
+  "Barcelona": 89,
+  "Sevilla": 80,
+  "Real Madrid": 93,
   "Valencia": 79
 };
 
 // MATCHES
 const matches = [
-  { league: "EPL", game: "Arsenal vs Wolves" },
-  { league: "EPL", game: "Man City vs Liverpool" },
-  { league: "La Liga", game: "Barcelona vs Sevilla" },
-  { league: "La Liga", game: "Real Madrid vs Valencia" },
-  { league: "Bundesliga", game: "Bayern vs Dortmund" },
-  { league: "UCL", game: "PSG vs Bayern" }
+  "EPL • Arsenal vs Wolves",
+  "EPL • Man City vs Liverpool",
+  "La Liga • Barcelona vs Sevilla",
+  "La Liga • Real Madrid vs Valencia"
 ];
 
+// LOAD MATCHES
 const container = document.getElementById("matches");
 
-// DISPLAY MATCHES
 matches.forEach(m => {
   const div = document.createElement("div");
   div.className = "match";
-  div.innerText = `${m.league} • ${m.game}`;
+  div.innerText = m;
   div.onclick = () => div.classList.toggle("selected");
   container.appendChild(div);
 });
 
 // NAVIGATION
-function showScreen(screenId) {
+function showScreen(id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(screenId).classList.add("active");
+  document.getElementById(id).classList.add("active");
 }
 
-// SMART PREDICTION
-function predict(matchText) {
-  const game = matchText.split("• ")[1];
+// PREDICTION
+function predict(text) {
+  const game = text.split("• ")[1];
   const [home, away] = game.split(" vs ");
 
-  const h = teams[home] || 75;
-  const a = teams[away] || 75;
-  const diff = h - a;
+  const diff = (teams[home] || 75) - (teams[away] || 75);
 
   let options = [];
 
-  options.push({
-    type: "SAFE",
-    pick: `${home} Over 0.5 Goals`,
-    reason: `${home} likely to score`
-  });
+  options.push(`${home} Over 0.5 Goals`);
+  options.push("Over 1.5 Goals");
 
-  options.push({
-    type: "SAFE",
-    pick: "Over 1.5 Goals",
-    reason: "Most games exceed 1 goal"
-  });
-
-  if (diff > 5) {
-    options.push({
-      type: "MEDIUM",
-      pick: `${home} Double Chance`,
-      reason: `${home} unlikely to lose`
-    });
-  }
-
-  if (Math.abs(diff) < 5) {
-    options.push({
-      type: "MEDIUM",
-      pick: "Both Teams To Score",
-      reason: "Balanced teams"
-    });
-  }
-
-  if (diff > 8) {
-    options.push({
-      type: "RISKY",
-      pick: `${home} Win`,
-      reason: `${home} stronger`
-    });
-  }
+  if (diff > 5) options.push(`${home} Double Chance`);
+  if (Math.abs(diff) < 5) options.push("Both Teams To Score");
+  if (diff > 8) options.push(`${home} Win`);
 
   return options;
 }
 
-// GENERATE SLIP
+// GENERATE
 function generateSlip() {
   const selected = document.querySelectorAll(".selected");
 
-  if (selected.length === 0) {
+  if (!selected.length) {
     alert("Select matches first");
     return;
   }
 
-  let html = "<h3>📋 YOUR BET SLIP</h3>";
+  let html = "<h3>📋 YOUR SLIP</h3>";
 
   selected.forEach(m => {
-    const options = predict(m.innerText);
-
-    html += `<div style="margin-bottom:15px;">`;
     html += `<b>${m.innerText}</b><br>`;
-
-    options.forEach(opt => {
-      html += `
-        <div style="margin:5px 0;">
-          <span style="color:green;">[${opt.type}]</span> ${opt.pick}<br>
-          <small>${opt.reason}</small>
-        </div>
-      `;
+    predict(m.innerText).forEach(p => {
+      html += `• ${p}<br>`;
     });
-
-    html += `</div>`;
+    html += "<br>";
   });
 
   document.getElementById("result").innerHTML = html;
 
-  // AUTO SWITCH TO SLIP SCREEN
+  // SWITCH SCREEN
   showScreen("slipScreen");
 }
 
