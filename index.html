@@ -8,32 +8,43 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom, #0a0f2c, #000);
+  background: radial-gradient(circle at top, #0a0f2c, #000);
   color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 header {
   padding: 25px;
   font-size: 28px;
   font-weight: bold;
 }
+
 .matches {
   width: 90%;
   max-width: 500px;
 }
+
 .match {
   background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
   padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 10px;
+  margin-bottom: 12px;
+  border-radius: 12px;
   text-align: center;
   cursor: pointer;
+  transition: 0.3s;
 }
+
+.match:hover {
+  transform: scale(1.02);
+}
+
 .selected {
   border: 2px solid #00ff99;
 }
+
 button {
   width: 90%;
   max-width: 500px;
@@ -44,6 +55,7 @@ button {
   border-radius: 10px;
   font-weight: bold;
 }
+
 .result {
   width: 90%;
   max-width: 500px;
@@ -66,7 +78,7 @@ button {
 
 <script>
 
-// 🔥 TEAM POWER DATABASE (simulate real stats)
+// 🔥 TEAM STRENGTH (simulated stats)
 const teams = {
   "Man City": 95,
   "Arsenal": 90,
@@ -78,13 +90,15 @@ const teams = {
   "Bayern": 94,
   "Dortmund": 86,
   "PSG": 91,
-  "Lyon": 78
+  "Lyon": 78,
+  "Wolves": 75,
+  "Valencia": 79
 };
 
-// 🌍 MATCHES (simulate real leagues)
+// 🌍 MATCHES
 const matches = [
+  { league: "EPL", game: "Arsenal vs Wolves" },
   { league: "EPL", game: "Man City vs Liverpool" },
-  { league: "EPL", game: "Arsenal vs Chelsea" },
   { league: "La Liga", game: "Barcelona vs Sevilla" },
   { league: "La Liga", game: "Real Madrid vs Valencia" },
   { league: "Bundesliga", game: "Bayern vs Dortmund" },
@@ -93,7 +107,6 @@ const matches = [
 
 const container = document.getElementById("matches");
 
-// 🧱 DISPLAY MATCHES
 matches.forEach(m => {
   const div = document.createElement("div");
   div.className = "match";
@@ -102,7 +115,7 @@ matches.forEach(m => {
   container.appendChild(div);
 });
 
-// 🧠 SMART ENGINE
+// 🧠 SMART ENGINE WITH MULTIPLE OPTIONS
 function predict(matchText) {
   const game = matchText.split("• ")[1];
   const [home, away] = game.split(" vs ");
@@ -111,43 +124,56 @@ function predict(matchText) {
   const a = teams[away] || 75;
   const diff = h - a;
 
-  // Probability
-  let probability = 50 + diff * 1.5;
-  probability = Math.max(5, Math.min(95, probability));
+  let options = [];
 
-  if (diff > 10) {
-    return {
-      pick: `${home} Win`,
-      reason: `${home} is much stronger`,
-      odds: "1.40",
-      chance: probability + "%"
-    };
-  }
+  // SAFEST OPTIONS
+  options.push({
+    type: "SAFE",
+    pick: `${home} Over 0.5 Goals`,
+    reason: `${home} likely to score at least once`
+  });
 
+  options.push({
+    type: "SAFE",
+    pick: "Over 1.5 Goals",
+    reason: "Most matches exceed 1 goal"
+  });
+
+  // MEDIUM RISK
   if (diff > 5) {
-    return {
-      pick: `${home} Win or Over 1.5`,
-      reason: `${home} has advantage`,
-      odds: "1.65",
-      chance: probability + "%"
-    };
+    options.push({
+      type: "MEDIUM",
+      pick: `${home} Double Chance`,
+      reason: `${home} unlikely to lose`
+    });
   }
 
-  if (Math.abs(diff) <= 5) {
-    return {
-      pick: "Over 2.5 Goals",
-      reason: "Balanced strong teams → goals likely",
-      odds: "1.80",
-      chance: "65%"
-    };
+  if (Math.abs(diff) < 5) {
+    options.push({
+      type: "MEDIUM",
+      pick: "Both Teams To Score",
+      reason: "Teams are evenly matched"
+    });
   }
 
-  return {
-    pick: `${away} Win or Double Chance`,
-    reason: `${away} slightly stronger`,
-    odds: "1.75",
-    chance: (100 - probability) + "%"
-  };
+  // HIGHER RISK
+  if (diff > 8) {
+    options.push({
+      type: "RISKY",
+      pick: `${home} Win`,
+      reason: `${home} clearly stronger`
+    });
+  }
+
+  if (diff < -8) {
+    options.push({
+      type: "RISKY",
+      pick: `${away} Win`,
+      reason: `${away} stronger side`
+    });
+  }
+
+  return options;
 }
 
 // 🎯 GENERATE SLIP
@@ -159,19 +185,25 @@ function generateSlip() {
     return;
   }
 
-  let html = "<h3>📋 SMART BET SLIP</h3>";
+  let html = "<h3>📋 SMART BET OPTIONS</h3>";
 
   selected.forEach(m => {
-    const res = predict(m.innerText);
+    const options = predict(m.innerText);
 
-    html += `
-      <div style="margin-bottom:10px;border-bottom:1px solid #333;">
-        <small>${m.innerText}</small><br>
-        <b style="color:#00ff99">${res.pick}</b><br>
-        <small>${res.reason}</small><br>
-        <small>Odds: ${res.odds} | Chance: ${res.chance}</small>
-      </div>
-    `;
+    html += `<div style="margin-bottom:15px;">`;
+    html += `<b>${m.innerText}</b><br>`;
+
+    options.forEach(opt => {
+      html += `
+        <div style="margin:5px 0;">
+          <span style="color:#00ff99;">[${opt.type}]</span> 
+          ${opt.pick}<br>
+          <small>${opt.reason}</small>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
   });
 
   document.getElementById("result").innerHTML = html;
