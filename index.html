@@ -96,11 +96,13 @@ header {
 
 let selections = {};
 
-// 🧠 FAKE API (SIMULATED RESPONSE)
+// 🔥 FETCH MATCHES FROM BACKEND
 async function fetchMatches() {
   try {
     const res = await fetch("/api/matches");
     const data = await res.json();
+
+    if (!data.response) throw new Error("No data");
 
     return data.response.map(match => ({
       home: match.teams.home.name,
@@ -108,21 +110,29 @@ async function fetchMatches() {
     }));
 
   } catch (error) {
-    console.error("Error loading matches:", error);
-    return [];
+    console.log("Using fallback matches");
+
+    // ✅ FALLBACK (IMPORTANT)
+    return [
+      {home:"Arsenal", away:"Wolves"},
+      {home:"Man City", away:"Liverpool"},
+      {home:"Barcelona", away:"Sevilla"},
+      {home:"Real Madrid", away:"Valencia"}
+    ];
   }
 }
 
 // TEAM DATA
 const teams = {
   "Arsenal": 90,"Wolves":75,"Man City":95,"Liverpool":92,
-  "Barcelona":89,"Sevilla":80,"Real Madrid":93,"Valencia":79,
-  "Bayern":94,"Dortmund":86,"PSG":91,"Lyon":78
+  "Barcelona":89,"Sevilla":80,"Real Madrid":93,"Valencia":79
 };
 
 // LOAD MATCHES
 async function loadMatches() {
   const matchesData = await fetchMatches();
+
+  document.getElementById("loading").style.display = "none";
 
   const container = document.getElementById("matches");
   container.innerHTML = "";
@@ -154,7 +164,6 @@ async function loadMatches() {
     container.appendChild(div);
   });
 }
-
 
 // OPTIONS ENGINE
 function getOptions(game) {
@@ -202,7 +211,7 @@ function updateSlip(){
 // AI
 function chat(){
   let q=document.getElementById("chatInput").value;
-  document.getElementById("chatOutput").innerHTML=`AI: Focus on safer bets like Over 1.5`;
+  document.getElementById("chatOutput").innerHTML=`AI: Try safer bets like Over 1.5 or Double Chance`;
 }
 
 // INIT
@@ -212,4 +221,3 @@ loadMatches();
 
 </body>
 </html>
-loadMatches();
