@@ -97,19 +97,20 @@ header {
 let selections = {};
 
 // 🧠 FAKE API (SIMULATED RESPONSE)
-function fetchMatches() {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve([
-        {home:"Arsenal", away:"Wolves"},
-        {home:"Man City", away:"Liverpool"},
-        {home:"Barcelona", away:"Sevilla"},
-        {home:"Real Madrid", away:"Valencia"},
-        {home:"Bayern", away:"Dortmund"},
-        {home:"PSG", away:"Lyon"}
-      ]);
-    }, 1000);
-  });
+async function fetchMatches() {
+  try {
+    const res = await fetch("/api/matches");
+    const data = await res.json();
+
+    return data.response.map(match => ({
+      home: match.teams.home.name,
+      away: match.teams.away.name
+    }));
+
+  } catch (error) {
+    console.error("Error loading matches:", error);
+    return [];
+  }
 }
 
 // TEAM DATA
@@ -121,12 +122,12 @@ const teams = {
 
 // LOAD MATCHES
 async function loadMatches() {
-  const data = await fetchMatches();
-  document.getElementById("loading").style.display = "none";
+  const matchesData = await fetchMatches();
 
   const container = document.getElementById("matches");
+  container.innerHTML = "";
 
-  data.forEach(m => {
+  matchesData.forEach(m => {
     const game = `${m.home} vs ${m.away}`;
 
     const div = document.createElement("div");
@@ -153,6 +154,7 @@ async function loadMatches() {
     container.appendChild(div);
   });
 }
+
 
 // OPTIONS ENGINE
 function getOptions(game) {
@@ -210,4 +212,4 @@ loadMatches();
 
 </body>
 </html>
-
+loadMatches();
