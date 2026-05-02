@@ -5,14 +5,12 @@
 <title>Tipster</title>
 
 <style>
-/* ===== GLOBAL ===== */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  overflow-x: hidden;
 }
 
-/* ===== SPLASH SCREEN ===== */
+/* ===== SPLASH ===== */
 #splash {
   position: fixed;
   width: 100%;
@@ -25,18 +23,9 @@ body {
   font-size: 40px;
   font-weight: bold;
   z-index: 9999;
-  animation: fadeOut 2s ease forwards;
-  animation-delay: 2.5s;
+  transition: opacity 1s ease;
 }
 
-@keyframes fadeOut {
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-
-/* Glow animation */
 .logo {
   animation: glow 2s infinite alternate;
 }
@@ -46,7 +35,7 @@ body {
   to { text-shadow: 0 0 25px #00ffcc; }
 }
 
-/* ===== MAIN APP ===== */
+/* ===== APP ===== */
 #app {
   display: none;
   background: linear-gradient(to bottom, #f5f9ff, #dbe9ff);
@@ -98,7 +87,6 @@ button {
   color: white;
   font-size: 18px;
   font-weight: bold;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 /* result */
@@ -107,7 +95,6 @@ button {
   background: white;
   margin: 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 </style>
 </head>
@@ -119,7 +106,7 @@ button {
   <div class="logo">🃏 Tipster</div>
 </div>
 
-<!-- MAIN APP -->
+<!-- APP -->
 <div id="app">
 
 <header>Tipster</header>
@@ -134,12 +121,19 @@ button {
 
 <script>
 
-/* ===== SHOW APP AFTER SPLASH ===== */
+/* FIXED SPLASH LOGIC */
 setTimeout(() => {
-  document.getElementById("app").style.display = "block";
-}, 2500);
+  const splash = document.getElementById("splash");
+  splash.style.opacity = "0";
 
-/* ===== MATCH DATA ===== */
+  setTimeout(() => {
+    splash.style.display = "none";
+    document.getElementById("app").style.display = "block";
+  }, 1000);
+
+}, 2000);
+
+/* MATCH DATA */
 const matches = [
   "Arsenal vs Chelsea",
   "Barcelona vs Sevilla",
@@ -150,7 +144,6 @@ const matches = [
 
 const container = document.getElementById("matches");
 
-/* ===== CREATE MATCHES ===== */
 matches.forEach(match => {
   const div = document.createElement("div");
   div.className = "match";
@@ -163,7 +156,7 @@ matches.forEach(match => {
   container.appendChild(div);
 });
 
-/* ===== GENERATE SLIP ===== */
+/* GENERATE SLIP */
 function generateSlip() {
   const selected = document.querySelectorAll(".selected");
 
@@ -182,10 +175,10 @@ function generateSlip() {
   document.getElementById("result").innerText = resultText;
 }
 
-/* ===== SMARTER PREDICTION (IMPROVED) ===== */
+/* PREDICTION */
 function getPrediction() {
   const options = [
-    "Over 1.5 Goals ✅ (Safe)",
+    "Over 1.5 Goals ✅",
     "Double Chance 🔒",
     "Both Teams To Score ⚽"
   ];
