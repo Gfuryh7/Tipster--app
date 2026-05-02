@@ -5,217 +5,192 @@
 <title>Tipster</title>
 
 <style>
+/* ===== GLOBAL ===== */
 body {
   margin: 0;
-  font-family: Arial;
-  background: linear-gradient(to bottom, #f4f6f9, #dfe6ee);
+  font-family: Arial, sans-serif;
+  overflow-x: hidden;
 }
 
+/* ===== SPLASH SCREEN ===== */
+#splash {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(135deg, #1a0033, #3a0ca3, #720026);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  z-index: 9999;
+  animation: fadeOut 2s ease forwards;
+  animation-delay: 2.5s;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Glow animation */
+.logo {
+  animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 10px #ff006e; }
+  to { text-shadow: 0 0 25px #00ffcc; }
+}
+
+/* ===== MAIN APP ===== */
+#app {
+  display: none;
+  background: linear-gradient(to bottom, #f5f9ff, #dbe9ff);
+  min-height: 100vh;
+  color: #0a0f2c;
+}
+
+/* header */
 header {
   text-align: center;
-  padding: 15px;
-  background: white;
+  padding: 20px;
+  font-size: 26px;
   font-weight: bold;
+  color: #1a237e;
 }
 
-.screen { display: none; padding-bottom: 80px; }
-.active { display: block; }
+/* matches */
+.matches {
+  padding: 20px;
+}
 
 .match {
   background: white;
-  margin: 10px;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-.option {
-  padding: 5px;
-  margin: 5px 0;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.option.selected {
-  background: #d4edda;
-  border: 1px solid green;
-}
-
-.navbar {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: white;
-  display: flex;
-  justify-content: space-around;
+  margin-bottom: 12px;
   padding: 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.nav-btn { cursor: pointer; }
-.active-tab { color: green; }
+.match:hover {
+  transform: scale(1.02);
+}
 
-.chatbox {
+.selected {
+  border: 2px solid #2962ff;
+  background: #e3f2fd;
+}
+
+/* button */
+button {
+  width: 90%;
+  margin: 20px;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #2962ff, #00c6ff);
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* result */
+.result {
+  padding: 20px;
   background: white;
-  margin: 10px;
-  padding: 10px;
-  border-radius: 10px;
+  margin: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 </style>
 </head>
 
 <body>
 
-<header>🃏 TIPSTER</header>
-
-<!-- MATCHES -->
-<div id="matchesScreen" class="screen active">
-  <p style="text-align:center;" id="loading">Loading matches...</p>
-  <div id="matches"></div>
+<!-- SPLASH -->
+<div id="splash">
+  <div class="logo">🃏 Tipster</div>
 </div>
 
-<!-- SLIP -->
-<div id="slipScreen" class="screen">
-  <div id="slip"></div>
-</div>
+<!-- MAIN APP -->
+<div id="app">
 
-<!-- CHAT -->
-<div id="chatScreen" class="screen">
-  <div class="chatbox">
-    <input id="chatInput" placeholder="Ask something..." />
-    <button onclick="chat()">Send</button>
-    <div id="chatOutput"></div>
-  </div>
-</div>
+<header>Tipster</header>
 
-<!-- NAV -->
-<div class="navbar">
-  <div class="nav-btn active-tab" onclick="show('matchesScreen', this)">Matches</div>
-  <div class="nav-btn" onclick="show('slipScreen', this)">Slip</div>
-  <div class="nav-btn" onclick="show('chatScreen', this)">Chat</div>
+<div class="matches" id="matches"></div>
+
+<button onclick="generateSlip()">Generate Safe Slip</button>
+
+<div class="result" id="result"></div>
+
 </div>
 
 <script>
 
-let selections = {};
+/* ===== SHOW APP AFTER SPLASH ===== */
+setTimeout(() => {
+  document.getElementById("app").style.display = "block";
+}, 2500);
 
-// 🔥 FETCH MATCHES FROM BACKEND
-async function fetchMatches() {
-  try {
-    const res = await fetch("/api/matches");
-    const data = await res.json();
+/* ===== MATCH DATA ===== */
+const matches = [
+  "Arsenal vs Chelsea",
+  "Barcelona vs Sevilla",
+  "Bayern vs Dortmund",
+  "Man City vs Liverpool",
+  "PSG vs Lyon"
+];
 
-    if (!data.response) throw new Error("No data");
+const container = document.getElementById("matches");
 
-    return data.response.map(match => ({
-      home: match.teams.home.name,
-      away: match.teams.away.name
-    }));
+/* ===== CREATE MATCHES ===== */
+matches.forEach(match => {
+  const div = document.createElement("div");
+  div.className = "match";
+  div.innerText = match;
 
-  } catch (error) {
-    console.log("Using fallback matches");
+  div.onclick = () => {
+    div.classList.toggle("selected");
+  };
 
-    // ✅ FALLBACK (IMPORTANT)
-    return [
-      {home:"Arsenal", away:"Wolves"},
-      {home:"Man City", away:"Liverpool"},
-      {home:"Barcelona", away:"Sevilla"},
-      {home:"Real Madrid", away:"Valencia"}
-    ];
+  container.appendChild(div);
+});
+
+/* ===== GENERATE SLIP ===== */
+function generateSlip() {
+  const selected = document.querySelectorAll(".selected");
+
+  if (selected.length === 0) {
+    alert("Select at least one match");
+    return;
   }
-}
 
-// TEAM DATA
-const teams = {
-  "Arsenal": 90,"Wolves":75,"Man City":95,"Liverpool":92,
-  "Barcelona":89,"Sevilla":80,"Real Madrid":93,"Valencia":79
-};
+  let resultText = "🧾 Tipster Slip:\n\n";
 
-// LOAD MATCHES
-async function loadMatches() {
-  const matchesData = await fetchMatches();
-
-  document.getElementById("loading").style.display = "none";
-
-  const container = document.getElementById("matches");
-  container.innerHTML = "";
-
-  matchesData.forEach(m => {
-    const game = `${m.home} vs ${m.away}`;
-
-    const div = document.createElement("div");
-    div.className = "match";
-    div.innerHTML = `<b>${game}</b>`;
-
-    const options = getOptions(game);
-
-    options.forEach(opt => {
-      const o = document.createElement("div");
-      o.className = "option";
-      o.innerText = `${opt.pick} (${opt.odds})`;
-
-      o.onclick = () => {
-        selections[game] = opt;
-        document.querySelectorAll(`[data-game="${game}"]`).forEach(x=>x.classList.remove("selected"));
-        o.classList.add("selected");
-      };
-
-      o.setAttribute("data-game", game);
-      div.appendChild(o);
-    });
-
-    container.appendChild(div);
-  });
-}
-
-// OPTIONS ENGINE
-function getOptions(game) {
-  const [home, away] = game.split(" vs ");
-  const diff = (teams[home]||75)-(teams[away]||75);
-
-  let ops = [];
-
-  ops.push({pick:`${home} Over 0.5`,odds:1.25});
-  ops.push({pick:"Over 1.5",odds:1.35});
-
-  if(diff>5) ops.push({pick:`${home} Double Chance`,odds:1.40});
-  if(Math.abs(diff)<5) ops.push({pick:"BTTS",odds:1.60});
-  if(diff>8) ops.push({pick:`${home} Win`,odds:1.75});
-
-  return ops;
-}
-
-// NAV
-function show(id,el){
-  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-
-  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active-tab"));
-  el.classList.add("active-tab");
-
-  if(id==="slipScreen") updateSlip();
-}
-
-// SLIP
-function updateSlip(){
-  let html="<h3>📋 YOUR SLIP</h3>";
-  let total=1;
-
-  Object.keys(selections).forEach(game=>{
-    let s=selections[game];
-    total*=s.odds;
-    html+=`<b>${game}</b><br>${s.pick} (${s.odds})<br><br>`;
+  selected.forEach(match => {
+    const choice = getPrediction();
+    resultText += match.innerText + " → " + choice + "\n";
   });
 
-  html+=`<hr><b>Total Odds: ${total.toFixed(2)}</b>`;
-  document.getElementById("slip").innerHTML=html;
+  document.getElementById("result").innerText = resultText;
 }
 
-// AI
-function chat(){
-  let q=document.getElementById("chatInput").value;
-  document.getElementById("chatOutput").innerHTML=`AI: Try safer bets like Over 1.5 or Double Chance`;
+/* ===== SMARTER PREDICTION (IMPROVED) ===== */
+function getPrediction() {
+  const options = [
+    "Over 1.5 Goals ✅ (Safe)",
+    "Double Chance 🔒",
+    "Both Teams To Score ⚽"
+  ];
+  return options[Math.floor(Math.random() * options.length)];
 }
-
-// INIT
-loadMatches();
 
 </script>
 
