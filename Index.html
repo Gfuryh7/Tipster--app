@@ -1,56 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Tipster</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: linear-gradient(to bottom, #0a0f2c, #000);
-      color: white;
-    }
-    header {
-      text-align: center;
-      padding: 20px;
-      font-size: 24px;
-      font-weight: bold;
-    }
-    .matches {
-      padding: 20px;
-    }
-    .match {
-      background: #1c1f3a;
-      margin-bottom: 10px;
-      padding: 15px;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    .selected {
-      border: 2px solid #00ff99;
-    }
-    button {
-      width: 90%;
-      margin: 20px;
-      padding: 15px;
-      border: none;
-      border-radius: 10px;
-      background: #00ff99;
-      color: black;
-      font-size: 18px;
-      font-weight: bold;
-    }
-    .result {
-      padding: 20px;
-      background: #111;
-      margin: 20px;
-      border-radius: 10px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Tipster</title>
+
+<style>
+/* ===== GLOBAL ===== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+/* ===== SPLASH SCREEN ===== */
+#splash {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(135deg, #1a0033, #3a0ca3, #720026);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  z-index: 9999;
+  animation: fadeOut 2s ease forwards;
+  animation-delay: 2.5s;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Glow animation */
+.logo {
+  animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 10px #ff006e; }
+  to { text-shadow: 0 0 25px #00ffcc; }
+}
+
+/* ===== MAIN APP ===== */
+#app {
+  display: none;
+  background: linear-gradient(to bottom, #f5f9ff, #dbe9ff);
+  min-height: 100vh;
+  color: #0a0f2c;
+}
+
+/* header */
+header {
+  text-align: center;
+  padding: 20px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #1a237e;
+}
+
+/* matches */
+.matches {
+  padding: 20px;
+}
+
+.match {
+  background: white;
+  margin-bottom: 12px;
+  padding: 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.match:hover {
+  transform: scale(1.02);
+}
+
+.selected {
+  border: 2px solid #2962ff;
+  background: #e3f2fd;
+}
+
+/* button */
+button {
+  width: 90%;
+  margin: 20px;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #2962ff, #00c6ff);
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* result */
+.result {
+  padding: 20px;
+  background: white;
+  margin: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+</style>
 </head>
+
 <body>
 
-<header>🃏 Tipster</header>
+<!-- SPLASH -->
+<div id="splash">
+  <div class="logo">🃏 Tipster</div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+
+<header>Tipster</header>
 
 <div class="matches" id="matches"></div>
 
@@ -58,55 +130,68 @@
 
 <div class="result" id="result"></div>
 
+</div>
+
 <script>
-  const matches = [
-    "Arsenal vs Chelsea",
-    "Barcelona vs Sevilla",
-    "Bayern vs Dortmund",
-    "Man City vs Liverpool",
-    "PSG vs Lyon"
-  ];
 
-  const container = document.getElementById("matches");
+/* ===== SHOW APP AFTER SPLASH ===== */
+setTimeout(() => {
+  document.getElementById("app").style.display = "block";
+}, 2500);
 
-  matches.forEach(match => {
-    const div = document.createElement("div");
-    div.className = "match";
-    div.innerText = match;
+/* ===== MATCH DATA ===== */
+const matches = [
+  "Arsenal vs Chelsea",
+  "Barcelona vs Sevilla",
+  "Bayern vs Dortmund",
+  "Man City vs Liverpool",
+  "PSG vs Lyon"
+];
 
-    div.onclick = () => {
-      div.classList.toggle("selected");
-    };
+const container = document.getElementById("matches");
 
-    container.appendChild(div);
+/* ===== CREATE MATCHES ===== */
+matches.forEach(match => {
+  const div = document.createElement("div");
+  div.className = "match";
+  div.innerText = match;
+
+  div.onclick = () => {
+    div.classList.toggle("selected");
+  };
+
+  container.appendChild(div);
+});
+
+/* ===== GENERATE SLIP ===== */
+function generateSlip() {
+  const selected = document.querySelectorAll(".selected");
+
+  if (selected.length === 0) {
+    alert("Select at least one match");
+    return;
+  }
+
+  let resultText = "🧾 Tipster Slip:\n\n";
+
+  selected.forEach(match => {
+    const choice = getPrediction();
+    resultText += match.innerText + " → " + choice + "\n";
   });
 
-  function generateSlip() {
-    const selected = document.querySelectorAll(".selected");
+  document.getElementById("result").innerText = resultText;
+}
 
-    if (selected.length === 0) {
-      alert("Select at least one match");
-      return;
-    }
+/* ===== SMARTER PREDICTION (IMPROVED) ===== */
+function getPrediction() {
+  const options = [
+    "Over 1.5 Goals ✅ (Safe)",
+    "Double Chance 🔒",
+    "Both Teams To Score ⚽"
+  ];
+  return options[Math.floor(Math.random() * options.length)];
+}
 
-    let resultText = "🧾 Tipster Slip:\n\n";
-
-    selected.forEach(match => {
-      const choice = getPrediction();
-      resultText += match.innerText + " → " + choice + "\n";
-    });
-
-    document.getElementById("result").innerText = resultText;
-  }
-
-  function getPrediction() {
-    const options = [
-      "Over 1.5 Goals",
-      "Double Chance",
-      "Both Teams To Score"
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
 </script>
 
 </body>
