@@ -11,14 +11,13 @@ body {
   background: #f5f9ff;
 }
 
-/* 🌌 SPLASH */
+/* SPLASH */
 #splash {
   position: fixed;
   width: 100%;
   height: 100vh;
   background:
-    linear-gradient(135deg, rgba(26,0,51,0.9), rgba(58,12,163,0.9)),
-    url('https://images.unsplash.com/photo-1502136969935-8d071f7c1e6c') center/cover;
+    linear-gradient(135deg, rgba(26,0,51,0.9), rgba(58,12,163,0.9));
   display: flex;
   justify-content: center;
   align-items: center;
@@ -72,6 +71,14 @@ body {
 
 .active {
   color: #2962ff;
+}
+
+/* SECTIONS */
+.section {
+  display: none;
+}
+.activeSection {
+  display: block;
 }
 
 /* SEARCH */
@@ -201,7 +208,6 @@ button {
 <div class="targetBox">
 🎯 Target Odds
 <input id="targetOdds" placeholder="e.g. 7">
-<div id="riskWarning"></div>
 </div>
 
 <div class="leagues" id="leagueBar"></div>
@@ -218,7 +224,7 @@ button {
 <div id="result" class="result"></div>
 </div>
 
-<!-- EXTRA TABS -->
+<!-- OTHER SECTIONS -->
 <div id="chat" class="section"><div class="result">💬 Coming soon</div></div>
 <div id="bot" class="section"><div class="result">🤖 Coming soon</div></div>
 <div id="settings" class="section"><div class="result">⚙️ Settings</div></div>
@@ -328,12 +334,20 @@ loadMatches(currentList);
 /* POPUP */
 function openPopup(stateObj,el){
   popup.classList.add("show");
-  popup.innerHTML="<b>Select Option</b>";
+
+  popup.innerHTML = `
+    <b>Select prediction style</b><br>
+    <small>🟢 Safe → 🟡 Balanced → 🔴 Risky (higher odds)</small>
+  `;
 
   options.forEach(opt=>{
+    let label = opt.risk === 1 ? "🟢 Safe" :
+                opt.risk === 2 ? "🟡 Balanced" :
+                "🔴 Risky";
+
     let d=document.createElement("div");
     d.className="option";
-    d.innerText=opt.name;
+    d.innerText=`${opt.name} (${label})`;
 
     d.onclick=()=>{
       stateObj.pick=opt;
@@ -350,10 +364,8 @@ function searchMatch(val){
   loadMatches(currentList.filter(m=>m.name.toLowerCase().includes(val.toLowerCase())));
 }
 
-/* NORMAL */
+/* GENERATE */
 function generateSlip(){
-  result.innerHTML="";
-
   let total=1;
   let count=0;
   let html="<b>Slip</b><br><br>";
@@ -367,49 +379,38 @@ function generateSlip(){
     }
   });
 
-  if(count===0){
-    html="⚠️ No selections yet";
-  } else {
-    html+=`<br><b>Total Odds: ${total.toFixed(2)}</b>`;
-  }
+  result.innerHTML = count === 0 ? "⚠️ No selections yet" :
+    html + `<br><b>Total Odds: ${total.toFixed(2)}</b>`;
 
-  result.innerHTML=html;
   switchTab(document.querySelectorAll(".nav div")[1],'picks');
 }
 
 /* SMART */
 function smartGenerate(){
-  result.innerHTML="";
-
   let target=parseFloat(targetOdds.value) || 3;
 
-  let selectedMatches = allMatches.filter(m=>state[m.id].selected);
-
-  if(selectedMatches.length === 0){
-    selectedMatches = [...allMatches];
-    selectedMatches.forEach(m=>state[m.id].selected=true);
+  let selected = allMatches.filter(m=>state[m.id].selected);
+  if(selected.length === 0){
+    selected = [...allMatches];
+    selected.forEach(m=>state[m.id].selected=true);
   }
 
-  selectedMatches.forEach(m=>{
-    state[m.id].pick = options[0];
-  });
+  selected.forEach(m=>state[m.id].pick=options[0]);
 
-  let total = calcTotal(selectedMatches);
+  let total=calcTotal(selected);
 
   let changed=true;
-
   while(total < target && changed){
     changed=false;
 
-    for(let m of selectedMatches){
+    for(let m of selected){
       let s=state[m.id];
       let i=options.indexOf(s.pick);
 
       if(i < options.length-1){
         s.pick=options[i+1];
         changed=true;
-        total=calcTotal(selectedMatches);
-
+        total=calcTotal(selected);
         if(total >= target) break;
       }
     }
@@ -417,20 +418,17 @@ function smartGenerate(){
 
   loadMatches(currentList);
 
-  let message = total >= target
-    ? "✅ Target reached"
-    : total >= target*0.8
-    ? "⚠️ Close to target"
-    : "❌ Cannot safely reach target";
+  let msg = total >= target ? "✅ Target reached"
+          : total >= target*0.8 ? "⚠️ Close to target"
+          : "❌ Cannot safely reach target";
 
   let html="<b>Smart Slip</b><br><br>";
-
-  selectedMatches.forEach(m=>{
+  selected.forEach(m=>{
     let s=state[m.id];
     html+=`${m.name} → ${s.pick.name} (${s.odds})<br>`;
   });
 
-  html+=`<br><b>Total Odds: ${total.toFixed(2)}</b><br>${message}`;
+  html+=`<br><b>Total Odds: ${total.toFixed(2)}</b><br>${msg}`;
 
   result.innerHTML=html;
 
@@ -452,10 +450,13 @@ function switchTab(el,id){
   document.querySelectorAll(".nav div").forEach(x=>x.classList.remove("active"));
   el.classList.add("active");
 
-  document.querySelectorAll(".section").forEach(s=>s.classList.remove("activeSection"));
+  document.querySelectorAll(".section").forEach(s=>{
+    s.classList.remove("activeSection");
+  });
+
   document.getElementById(id).classList.add("activeSection");
 
-  if(id === "home"){
+  if(id==="home"){
     result.innerHTML="";
   }
 }
