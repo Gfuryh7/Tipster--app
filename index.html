@@ -61,7 +61,8 @@ body {
   flex: 1;
   text-align: center;
   padding: 10px;
-  font-size: 13px;
+  font-size: 12px;
+  cursor: pointer;
 }
 
 .nav span {
@@ -190,6 +191,7 @@ button {
 
 <div id="app">
 
+<!-- HOME -->
 <div id="home" class="section activeSection">
 
 <div class="search">
@@ -211,15 +213,25 @@ button {
 
 </div>
 
+<!-- SLIP -->
 <div id="picks" class="section">
 <div id="result" class="result"></div>
 </div>
 
+<!-- EXTRA TABS -->
+<div id="chat" class="section"><div class="result">💬 Coming soon</div></div>
+<div id="bot" class="section"><div class="result">🤖 Coming soon</div></div>
+<div id="settings" class="section"><div class="result">⚙️ Settings</div></div>
+
 </div>
 
+<!-- NAV -->
 <div class="nav">
 <div onclick="switchTab(this,'home')" class="active"><span>🏠</span>Home</div>
 <div onclick="switchTab(this,'picks')"><span>📊</span>Slip</div>
+<div onclick="switchTab(this,'chat')"><span>💬</span>Chat</div>
+<div onclick="switchTab(this,'bot')"><span>🤖</span>Bot</div>
+<div onclick="switchTab(this,'settings')"><span>⚙️</span>Settings</div>
 </div>
 
 <div id="popup" class="popup"></div>
@@ -340,6 +352,8 @@ function searchMatch(val){
 
 /* NORMAL */
 function generateSlip(){
+  result.innerHTML="";
+
   let total=1;
   let count=0;
   let html="<b>Slip</b><br><br>";
@@ -363,30 +377,38 @@ function generateSlip(){
   switchTab(document.querySelectorAll(".nav div")[1],'picks');
 }
 
-/* 🧠 SMART LOGIC */
+/* SMART */
 function smartGenerate(){
+  result.innerHTML="";
+
   let target=parseFloat(targetOdds.value) || 3;
 
-  allMatches.forEach(m=>{
-    state[m.id].selected=true;
-    state[m.id].pick=options[0];
+  let selectedMatches = allMatches.filter(m=>state[m.id].selected);
+
+  if(selectedMatches.length === 0){
+    selectedMatches = [...allMatches];
+    selectedMatches.forEach(m=>state[m.id].selected=true);
+  }
+
+  selectedMatches.forEach(m=>{
+    state[m.id].pick = options[0];
   });
 
-  let total=calcTotal();
+  let total = calcTotal(selectedMatches);
 
   let changed=true;
 
   while(total < target && changed){
     changed=false;
 
-    for(let m of allMatches){
+    for(let m of selectedMatches){
       let s=state[m.id];
       let i=options.indexOf(s.pick);
 
       if(i < options.length-1){
         s.pick=options[i+1];
         changed=true;
-        total=calcTotal();
+        total=calcTotal(selectedMatches);
 
         if(total >= target) break;
       }
@@ -403,22 +425,21 @@ function smartGenerate(){
 
   let html="<b>Smart Slip</b><br><br>";
 
-  allMatches.forEach(m=>{
+  selectedMatches.forEach(m=>{
     let s=state[m.id];
-    if(s.selected){
-      html+=`${m.name} → ${s.pick.name} (${s.odds})<br>`;
-    }
+    html+=`${m.name} → ${s.pick.name} (${s.odds})<br>`;
   });
 
   html+=`<br><b>Total Odds: ${total.toFixed(2)}</b><br>${message}`;
 
   result.innerHTML=html;
+
   switchTab(document.querySelectorAll(".nav div")[1],'picks');
 }
 
-function calcTotal(){
+function calcTotal(list){
   let t=1;
-  allMatches.forEach(m=>{
+  list.forEach(m=>{
     if(state[m.id].selected){
       t*=state[m.id].odds;
     }
@@ -433,6 +454,10 @@ function switchTab(el,id){
 
   document.querySelectorAll(".section").forEach(s=>s.classList.remove("activeSection"));
   document.getElementById(id).classList.add("activeSection");
+
+  if(id === "home"){
+    result.innerHTML="";
+  }
 }
 
 </script>
