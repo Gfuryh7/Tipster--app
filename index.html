@@ -46,10 +46,10 @@ body {
 /* APP */
 #app {
   display: none;
-  padding-bottom: 100px;
+  padding-bottom: 120px;
 }
 
-/* NAV */
+/* NAV (UPGRADED) */
 .nav {
   position: fixed;
   bottom: 0;
@@ -57,13 +57,20 @@ body {
   background: white;
   display: flex;
   justify-content: space-around;
-  padding: 15px 0;
+  padding: 12px 0;
   border-top: 1px solid #ccc;
 }
 
 .nav div {
   cursor: pointer;
   color: #888;
+  font-size: 13px;
+  text-align: center;
+}
+
+.nav div span {
+  display: block;
+  font-size: 22px;
 }
 
 .nav .active {
@@ -84,6 +91,22 @@ body {
   padding: 16px;
   border-radius: 14px;
   border: none;
+}
+
+/* TARGET ODDS */
+.targetBox {
+  margin: 10px 15px;
+  padding: 15px;
+  background: white;
+  border-radius: 15px;
+}
+
+.targetBox input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  margin-top: 8px;
 }
 
 /* LEAGUES */
@@ -157,30 +180,17 @@ button {
   border-radius: 15px;
 }
 
-/* POPUP */
-.popup {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: white;
-  padding: 20px;
-  display: none;
-  border-radius: 20px 20px 0 0;
-}
-
-.option {
-  padding: 15px;
-  margin: 10px 0;
-  background: #e3f2fd;
-  border-radius: 10px;
-  cursor: pointer;
+/* WARNING */
+.warning {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- SPLASH -->
 <div id="splash">
   <div>
     <div class="card">🃏</div>
@@ -188,13 +198,19 @@ button {
   </div>
 </div>
 
-<!-- APP -->
 <div id="app">
 
 <div id="home" class="section activeSection">
 
 <div class="search">
   <input placeholder="Search..." oninput="searchMatch(this.value)">
+</div>
+
+<!-- 🎯 TARGET ODDS -->
+<div class="targetBox">
+  🎯 Enter Target Odds (optional)
+  <input type="number" id="targetOdds" placeholder="e.g. 5.0">
+  <div id="riskWarning" class="warning"></div>
 </div>
 
 <div class="leagues" id="leagueBar"></div>
@@ -219,16 +235,21 @@ button {
 
 </div>
 
+<!-- NAV UPDATED -->
 <div class="nav">
-  <div onclick="switchTab(this,'home')" class="active">🏠</div>
-  <div onclick="switchTab(this,'picks')">📊</div>
-  <div onclick="switchTab(this,'chat')">💬</div>
-  <div onclick="switchTab(this,'bot')">🤖</div>
+  <div onclick="switchTab(this,'home')" class="active"><span>🏠</span>Home</div>
+  <div onclick="switchTab(this,'picks')"><span>📊</span>Slip</div>
+  <div onclick="switchTab(this,'chat')"><span>💬</span>Chat</div>
+  <div onclick="switchTab(this,'bot')"><span>🤖</span>Bot</div>
 </div>
 
 <div id="popup" class="popup"></div>
 
 <script>
+
+const splash = document.getElementById("splash");
+const app = document.getElementById("app");
+const matches = document.getElementById("matches");
 
 /* SPLASH */
 setTimeout(()=>{
@@ -239,12 +260,21 @@ setTimeout(()=>{
 /* DATA */
 const leagues=["All","Premier","La Liga"];
 const allMatches=[
-  {name:"Arsenal vs Chelsea",league:"Premier"},
-  {name:"Barcelona vs Sevilla",league:"La Liga"},
-  {name:"Bayern vs Dortmund",league:"All"}
+  {id:1,name:"Arsenal vs Chelsea",league:"Premier"},
+  {id:2,name:"Barcelona vs Sevilla",league:"La Liga"},
+  {id:3,name:"Bayern vs Dortmund",league:"All"}
 ];
 
+let matchState = {};
 let currentList=[...allMatches];
+
+allMatches.forEach(m=>{
+  matchState[m.id]={
+    pick:["Over 1.5","BTTS","Double Chance"][Math.floor(Math.random()*3)],
+    odds:(Math.random()*1+1.2).toFixed(2),
+    selected:false
+  };
+});
 
 const leagueBar=document.getElementById("leagueBar");
 
@@ -267,22 +297,32 @@ leagues.forEach(l=>{
 /* LOAD */
 function loadMatches(list){
   matches.innerHTML="";
+
   list.forEach(m=>{
-    let defaultPick=getPrediction();
-    let odds=(Math.random()*1+1.2).toFixed(2);
+    let state=matchState[m.id];
 
     let div=document.createElement("div");
     div.className="match";
+    if(state.selected) div.classList.add("selected");
 
     div.innerHTML=`
       <div class="teams">${m.name}</div>
       <div class="pickRow">
-        <div class="pick" onclick="changeOption(this,event)">${defaultPick}</div>
-        <div>${odds}</div>
+        <div class="pick">${state.pick}</div>
+        <div>${state.odds}</div>
       </div>
     `;
 
-    div.onclick=()=>div.classList.toggle("selected");
+    div.onclick=()=>{
+      state.selected=!state.selected;
+      div.classList.toggle("selected");
+    };
+
+    div.querySelector(".pick").onclick=(e)=>{
+      e.stopPropagation();
+      state.pick = prompt("Enter option:", state.pick) || state.pick;
+      loadMatches(currentList);
+    };
 
     matches.appendChild(div);
   });
@@ -295,41 +335,34 @@ function searchMatch(val){
   loadMatches(currentList.filter(m=>m.name.toLowerCase().includes(val.toLowerCase())));
 }
 
-/* PREDICTION */
-function getPrediction(){
-  return ["Over 1.5","BTTS","Double Chance"][Math.floor(Math.random()*3)];
-}
-
-/* CHANGE OPTION */
-function changeOption(el,e){
-  e.stopPropagation();
-  popup.style.display="block";
-  popup.innerHTML="<b>Select Option</b>";
-
-  ["Over 1.5","BTTS","Double Chance"].forEach(opt=>{
-    let d=document.createElement("div");
-    d.className="option";
-    d.innerText=opt;
-    d.onclick=()=>{
-      el.innerText=opt;
-      popup.style.display="none";
-    };
-    popup.appendChild(d);
-  });
-}
-
 /* GENERATE */
 function generateSlip(){
   let total=1;
+  let count=0;
   let html="<b>Slip</b><br><br>";
 
-  document.querySelectorAll(".selected").forEach(m=>{
-    let pick=m.querySelector(".pick").innerText;
-    let odd=parseFloat(m.querySelector(".pickRow div:last-child").innerText);
-    total*=odd;
-
-    html+=`${m.querySelector(".teams").innerText} → ${pick} (${odd})<br>`;
+  allMatches.forEach(m=>{
+    let state=matchState[m.id];
+    if(state.selected){
+      total*=state.odds;
+      count++;
+      html+=`${m.name} → ${state.pick} (${state.odds})<br>`;
+    }
   });
+
+  if(count===0){
+    result.innerHTML="⚠️ No selections yet";
+    return;
+  }
+
+  let target=document.getElementById("targetOdds").value;
+  let warning="";
+
+  if(target && total < target){
+    warning="⚠️ Your target odds are higher than current slip. Risk may increase.";
+  }
+
+  document.getElementById("riskWarning").innerText=warning;
 
   html+=`<br><b>Total Odds: ${total.toFixed(2)}</b>`;
   result.innerHTML=html;
