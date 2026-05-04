@@ -11,17 +11,18 @@ body {
   background: #f5f9ff;
 }
 
-/* SPLASH */
+/* 🌌 SPLASH */
 #splash {
   position: fixed;
   width: 100%;
   height: 100vh;
-  background: linear-gradient(135deg, #1a0033, #3a0ca3);
+  background:
+    linear-gradient(135deg, rgba(26,0,51,0.9), rgba(58,12,163,0.9)),
+    url('https://images.unsplash.com/photo-1502136969935-8d071f7c1e6c') center/cover;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  color: white;
   z-index: 9999;
 }
 
@@ -33,6 +34,11 @@ body {
 @keyframes flip {
   0% { transform: rotateY(0deg); }
   100% { transform: rotateY(360deg); }
+}
+
+.title {
+  color: white;
+  font-size: 28px;
 }
 
 /* APP */
@@ -55,6 +61,7 @@ body {
   flex: 1;
   text-align: center;
   padding: 10px;
+  font-size: 13px;
 }
 
 .nav span {
@@ -73,6 +80,7 @@ body {
   padding: 18px;
   font-size: 16px;
   border-radius: 14px;
+  border: none;
 }
 
 /* TARGET */
@@ -88,6 +96,26 @@ body {
   padding: 15px;
   font-size: 16px;
   border-radius: 10px;
+}
+
+/* LEAGUES */
+.leagues {
+  display: flex;
+  overflow-x: auto;
+  padding: 10px;
+}
+
+.league {
+  padding: 10px 18px;
+  background: white;
+  margin-right: 10px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.activeLeague {
+  background: #2962ff;
+  color: white;
 }
 
 /* MATCH */
@@ -109,14 +137,6 @@ body {
   cursor: pointer;
 }
 
-/* RESULT */
-.result {
-  margin: 15px;
-  padding: 20px;
-  background: white;
-  border-radius: 15px;
-}
-
 /* BUTTON */
 button {
   width: 90%;
@@ -127,20 +147,49 @@ button {
   background: #2962ff;
   color: white;
 }
+
+/* RESULT */
+.result {
+  margin: 15px;
+  padding: 15px;
+  background: white;
+  border-radius: 15px;
+}
+
+/* POPUP */
+.popup {
+  position: fixed;
+  bottom: -300px;
+  width: 100%;
+  background: white;
+  padding: 20px;
+  border-radius: 20px 20px 0 0;
+  transition: 0.3s;
+}
+
+.popup.show {
+  bottom: 0;
+}
+
+.option {
+  padding: 15px;
+  margin: 10px 0;
+  background: #e3f2fd;
+  border-radius: 10px;
+  cursor: pointer;
+}
 </style>
 </head>
 
 <body>
 
-<!-- SPLASH -->
 <div id="splash">
   <div class="card">🃏</div>
-  <div>Tipster</div>
+  <div class="title">Tipster</div>
 </div>
 
 <div id="app">
 
-<!-- HOME -->
 <div id="home" class="section activeSection">
 
 <div class="search">
@@ -149,8 +198,11 @@ button {
 
 <div class="targetBox">
 🎯 Target Odds
-<input id="targetOdds" placeholder="e.g. 5.0">
+<input id="targetOdds" placeholder="e.g. 7">
+<div id="riskWarning"></div>
 </div>
+
+<div class="leagues" id="leagueBar"></div>
 
 <div id="matches"></div>
 
@@ -159,48 +211,74 @@ button {
 
 </div>
 
-<!-- SLIP -->
 <div id="picks" class="section">
 <div id="result" class="result"></div>
 </div>
 
 </div>
 
-<!-- NAV -->
 <div class="nav">
 <div onclick="switchTab(this,'home')" class="active"><span>🏠</span>Home</div>
 <div onclick="switchTab(this,'picks')"><span>📊</span>Slip</div>
 </div>
 
+<div id="popup" class="popup"></div>
+
 <script>
 
-/* SPLASH */
+const splash = document.getElementById("splash");
+const app = document.getElementById("app");
+const matches = document.getElementById("matches");
+const popup = document.getElementById("popup");
+
 setTimeout(()=>{
   splash.style.display="none";
   app.style.display="block";
 },2000);
 
 /* DATA */
+const leagues=["All","Premier","La Liga"];
+
+const allMatches=[
+  {id:1,name:"Arsenal vs Chelsea",league:"Premier"},
+  {id:2,name:"Barcelona vs Sevilla",league:"La Liga"},
+  {id:3,name:"Bayern vs Dortmund",league:"All"}
+];
+
 const options=[
   {name:"Over 1.5",risk:1},
   {name:"Double Chance",risk:2},
   {name:"BTTS",risk:3}
 ];
 
-const matchesData=[
-  {id:1,name:"Arsenal vs Chelsea"},
-  {id:2,name:"Barcelona vs Sevilla"},
-  {id:3,name:"Bayern vs Dortmund"}
-];
-
 let state={};
+let currentList=[...allMatches];
 
-matchesData.forEach(m=>{
+allMatches.forEach(m=>{
   state[m.id]={
     pick:options[0],
     odds:(Math.random()*1+1.2).toFixed(2),
     selected:false
   };
+});
+
+/* LEAGUES */
+const leagueBar=document.getElementById("leagueBar");
+
+leagues.forEach(l=>{
+  let div=document.createElement("div");
+  div.className="league";
+  div.innerText=l;
+
+  div.onclick=()=>{
+    document.querySelectorAll(".league").forEach(x=>x.classList.remove("activeLeague"));
+    div.classList.add("activeLeague");
+
+    currentList = l==="All"?allMatches:allMatches.filter(m=>m.league===l);
+    loadMatches(currentList);
+  };
+
+  leagueBar.appendChild(div);
 });
 
 /* LOAD */
@@ -226,29 +304,47 @@ function loadMatches(list){
 
     div.querySelector(".pick").onclick=(e)=>{
       e.stopPropagation();
-      let i=options.indexOf(s.pick);
-      s.pick=options[(i+1)%options.length];
-      loadMatches(matchesData);
+      openPopup(s,div.querySelector(".pick"));
     };
 
     matches.appendChild(div);
   });
 }
 
-loadMatches(matchesData);
+loadMatches(currentList);
+
+/* POPUP */
+function openPopup(stateObj,el){
+  popup.classList.add("show");
+  popup.innerHTML="<b>Select Option</b>";
+
+  options.forEach(opt=>{
+    let d=document.createElement("div");
+    d.className="option";
+    d.innerText=opt.name;
+
+    d.onclick=()=>{
+      stateObj.pick=opt;
+      el.innerText=opt.name;
+      popup.classList.remove("show");
+    };
+
+    popup.appendChild(d);
+  });
+}
 
 /* SEARCH */
 function searchMatch(val){
-  loadMatches(matchesData.filter(m=>m.name.toLowerCase().includes(val.toLowerCase())));
+  loadMatches(currentList.filter(m=>m.name.toLowerCase().includes(val.toLowerCase())));
 }
 
-/* GENERATE */
+/* NORMAL */
 function generateSlip(){
   let total=1;
   let count=0;
   let html="<b>Slip</b><br><br>";
 
-  matchesData.forEach(m=>{
+  allMatches.forEach(m=>{
     let s=state[m.id];
     if(s.selected){
       total*=s.odds;
@@ -264,42 +360,65 @@ function generateSlip(){
   }
 
   result.innerHTML=html;
-
-  // 🔥 AUTO NAVIGATE BACK
   switchTab(document.querySelectorAll(".nav div")[1],'picks');
 }
 
-/* SMART */
+/* 🧠 SMART LOGIC */
 function smartGenerate(){
   let target=parseFloat(targetOdds.value) || 3;
 
-  matchesData.forEach(m=>{
+  allMatches.forEach(m=>{
     state[m.id].selected=true;
     state[m.id].pick=options[0];
   });
 
   let total=calcTotal();
 
-  for(let m of matchesData){
-    if(total >= target) break;
+  let changed=true;
 
-    let s=state[m.id];
-    let i=options.indexOf(s.pick);
+  while(total < target && changed){
+    changed=false;
 
-    if(i < options.length-1){
-      s.pick=options[i+1];
-      total=calcTotal();
+    for(let m of allMatches){
+      let s=state[m.id];
+      let i=options.indexOf(s.pick);
+
+      if(i < options.length-1){
+        s.pick=options[i+1];
+        changed=true;
+        total=calcTotal();
+
+        if(total >= target) break;
+      }
     }
   }
 
-  loadMatches(matchesData);
-  generateSlip();
+  loadMatches(currentList);
+
+  let message = total >= target
+    ? "✅ Target reached"
+    : total >= target*0.8
+    ? "⚠️ Close to target"
+    : "❌ Cannot safely reach target";
+
+  let html="<b>Smart Slip</b><br><br>";
+
+  allMatches.forEach(m=>{
+    let s=state[m.id];
+    if(s.selected){
+      html+=`${m.name} → ${s.pick.name} (${s.odds})<br>`;
+    }
+  });
+
+  html+=`<br><b>Total Odds: ${total.toFixed(2)}</b><br>${message}`;
+
+  result.innerHTML=html;
+  switchTab(document.querySelectorAll(".nav div")[1],'picks');
 }
 
-/* CALC */
 function calcTotal(){
   let t=1;
-  matchesData.forEach(m=>{
+  allMatches.forEach(m=>{
     if(state[m.id].selected){
       t*=state[m.id].odds;
     }
