@@ -16,14 +16,23 @@ body {
   position: fixed;
   width: 100%;
   height: 100vh;
-  background:
-    linear-gradient(135deg, rgba(26,0,51,0.85), rgba(58,12,163,0.85));
+  background: linear-gradient(135deg, #1a0033, #3a0ca3);
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   color: white;
-  font-size: 30px;
   z-index: 9999;
+}
+
+.card {
+  font-size: 60px;
+  animation: flip 2s ease;
+}
+
+@keyframes flip {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
 }
 
 /* APP */
@@ -37,20 +46,18 @@ body {
   position: fixed;
   bottom: 0;
   width: 100%;
-  background: white;
   display: flex;
-  justify-content: space-around;
-  padding: 12px 0;
+  background: white;
   border-top: 1px solid #ccc;
 }
 
 .nav div {
+  flex: 1;
   text-align: center;
-  font-size: 13px;
-  cursor: pointer;
+  padding: 10px;
 }
 
-.nav div span {
+.nav span {
   display: block;
   font-size: 22px;
 }
@@ -61,11 +68,11 @@ body {
 
 /* SEARCH */
 .search input {
-  width: 90%;
+  width: 92%;
   margin: 15px;
-  padding: 15px;
+  padding: 18px;
+  font-size: 16px;
   border-radius: 14px;
-  border: none;
 }
 
 /* TARGET */
@@ -76,24 +83,11 @@ body {
   border-radius: 15px;
 }
 
-/* LEAGUES */
-.leagues {
-  display: flex;
-  overflow-x: auto;
-  padding: 10px;
-}
-
-.league {
-  padding: 10px 18px;
-  background: white;
-  margin-right: 10px;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-.activeLeague {
-  background: #2962ff;
-  color: white;
+.targetBox input {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  border-radius: 10px;
 }
 
 /* MATCH */
@@ -110,9 +104,17 @@ body {
 
 .pick {
   background: #e3f2fd;
-  padding: 8px 12px;
+  padding: 10px;
   border-radius: 10px;
   cursor: pointer;
+}
+
+/* RESULT */
+.result {
+  margin: 15px;
+  padding: 20px;
+  background: white;
+  border-radius: 15px;
 }
 
 /* BUTTON */
@@ -125,42 +127,20 @@ button {
   background: #2962ff;
   color: white;
 }
-
-/* POPUP */
-.popup {
-  position: fixed;
-  bottom: -300px;
-  width: 100%;
-  background: white;
-  padding: 20px;
-  border-radius: 20px 20px 0 0;
-  transition: 0.3s;
-}
-
-.popup.show {
-  bottom: 0;
-}
-
-/* RESULT */
-.result {
-  margin: 15px;
-  padding: 15px;
-  background: white;
-  border-radius: 15px;
-}
-
-.warning {
-  color: red;
-}
 </style>
 </head>
 
 <body>
 
-<div id="splash">Tipster</div>
+<!-- SPLASH -->
+<div id="splash">
+  <div class="card">🃏</div>
+  <div>Tipster</div>
+</div>
 
 <div id="app">
 
+<!-- HOME -->
 <div id="home" class="section activeSection">
 
 <div class="search">
@@ -168,12 +148,9 @@ button {
 </div>
 
 <div class="targetBox">
-🎯 Target Odds:
-<input id="targetOdds" type="number" placeholder="e.g. 5">
-<div id="riskWarning" class="warning"></div>
+🎯 Target Odds
+<input id="targetOdds" placeholder="e.g. 5.0">
 </div>
-
-<div class="leagues" id="leagueBar"></div>
 
 <div id="matches"></div>
 
@@ -182,26 +159,20 @@ button {
 
 </div>
 
+<!-- SLIP -->
 <div id="picks" class="section">
 <div id="result" class="result"></div>
 </div>
 
 </div>
 
+<!-- NAV -->
 <div class="nav">
 <div onclick="switchTab(this,'home')" class="active"><span>🏠</span>Home</div>
 <div onclick="switchTab(this,'picks')"><span>📊</span>Slip</div>
 </div>
 
-<div id="popup" class="popup"></div>
-
 <script>
-
-/* ELEMENTS */
-const splash = document.getElementById("splash");
-const app = document.getElementById("app");
-const matches = document.getElementById("matches");
-const popup = document.getElementById("popup");
 
 /* SPLASH */
 setTimeout(()=>{
@@ -210,49 +181,26 @@ setTimeout(()=>{
 },2000);
 
 /* DATA */
-const leagues=["All","Premier","La Liga"];
-
-const allMatches=[
-  {id:1,name:"Arsenal vs Chelsea",league:"Premier"},
-  {id:2,name:"Barcelona vs Sevilla",league:"La Liga"},
-  {id:3,name:"Bayern vs Dortmund",league:"All"}
-];
-
 const options=[
   {name:"Over 1.5",risk:1},
   {name:"Double Chance",risk:2},
   {name:"BTTS",risk:3}
 ];
 
-let state={};
-let currentList=[...allMatches];
+const matchesData=[
+  {id:1,name:"Arsenal vs Chelsea"},
+  {id:2,name:"Barcelona vs Sevilla"},
+  {id:3,name:"Bayern vs Dortmund"}
+];
 
-/* INIT */
-allMatches.forEach(m=>{
+let state={};
+
+matchesData.forEach(m=>{
   state[m.id]={
     pick:options[0],
     odds:(Math.random()*1+1.2).toFixed(2),
     selected:false
   };
-});
-
-/* LEAGUES */
-const leagueBar=document.getElementById("leagueBar");
-
-leagues.forEach(l=>{
-  let div=document.createElement("div");
-  div.className="league";
-  div.innerText=l;
-
-  div.onclick=()=>{
-    document.querySelectorAll(".league").forEach(x=>x.classList.remove("activeLeague"));
-    div.classList.add("activeLeague");
-
-    currentList = l==="All"?allMatches:allMatches.filter(m=>m.league===l);
-    loadMatches(currentList);
-  };
-
-  leagueBar.appendChild(div);
 });
 
 /* LOAD */
@@ -278,47 +226,29 @@ function loadMatches(list){
 
     div.querySelector(".pick").onclick=(e)=>{
       e.stopPropagation();
-      openPopup(s,div.querySelector(".pick"));
+      let i=options.indexOf(s.pick);
+      s.pick=options[(i+1)%options.length];
+      loadMatches(matchesData);
     };
 
     matches.appendChild(div);
   });
 }
 
-loadMatches(currentList);
-
-/* POPUP */
-function openPopup(stateObj,el){
-  popup.classList.add("show");
-  popup.innerHTML="<b>Select Option</b>";
-
-  options.forEach(opt=>{
-    let d=document.createElement("div");
-    d.innerText=opt.name;
-    d.className="pick";
-
-    d.onclick=()=>{
-      stateObj.pick=opt;
-      el.innerText=opt.name;
-      popup.classList.remove("show");
-    };
-
-    popup.appendChild(d);
-  });
-}
+loadMatches(matchesData);
 
 /* SEARCH */
 function searchMatch(val){
-  loadMatches(currentList.filter(m=>m.name.toLowerCase().includes(val.toLowerCase())));
+  loadMatches(matchesData.filter(m=>m.name.toLowerCase().includes(val.toLowerCase())));
 }
 
-/* NORMAL SLIP */
+/* GENERATE */
 function generateSlip(){
   let total=1;
   let count=0;
   let html="<b>Slip</b><br><br>";
 
-  allMatches.forEach(m=>{
+  matchesData.forEach(m=>{
     let s=state[m.id];
     if(s.selected){
       total*=s.odds;
@@ -328,29 +258,29 @@ function generateSlip(){
   });
 
   if(count===0){
-    result.innerHTML="⚠️ No selections yet";
-    return;
+    html="⚠️ No selections yet";
+  } else {
+    html+=`<br><b>Total Odds: ${total.toFixed(2)}</b>`;
   }
 
-  html+=`<br><b>Total Odds: ${total.toFixed(2)}</b>`;
   result.innerHTML=html;
+
+  // 🔥 AUTO NAVIGATE BACK
   switchTab(document.querySelectorAll(".nav div")[1],'picks');
 }
 
-/* 🧠 SMART LOGIC */
+/* SMART */
 function smartGenerate(){
   let target=parseFloat(targetOdds.value) || 3;
 
-  // select all matches
-  allMatches.forEach(m=>{
+  matchesData.forEach(m=>{
     state[m.id].selected=true;
-    state[m.id].pick=options[0]; // safe
+    state[m.id].pick=options[0];
   });
 
   let total=calcTotal();
 
-  // increase risk gradually
-  for(let m of allMatches){
+  for(let m of matchesData){
     if(total >= target) break;
 
     let s=state[m.id];
@@ -362,14 +292,14 @@ function smartGenerate(){
     }
   }
 
-  loadMatches(currentList);
+  loadMatches(matchesData);
   generateSlip();
 }
 
 /* CALC */
 function calcTotal(){
   let t=1;
-  allMatches.forEach(m=>{
+  matchesData.forEach(m=>{
     if(state[m.id].selected){
       t*=state[m.id].odds;
     }
