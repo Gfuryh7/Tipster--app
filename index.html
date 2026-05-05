@@ -5,176 +5,85 @@
 <title>Tipster</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #f5f9ff;
-}
+body { margin:0; font-family:Arial; background:#f5f9ff; }
 
 /* SPLASH */
 #splash {
-  position: fixed;
-  width: 100%;
-  height: 100vh;
-  background: linear-gradient(135deg, #1a0033, #3a0ca3);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  color: white;
-  z-index: 9999;
+  position:fixed; width:100%; height:100vh;
+  background:linear-gradient(135deg,#1a0033,#3a0ca3);
+  display:flex; justify-content:center; align-items:center;
+  flex-direction:column; color:white; z-index:9999;
 }
-
-.card {
-  font-size: 60px;
-  animation: flip 2s ease;
-}
-
-@keyframes flip {
-  0% { transform: rotateY(0deg); }
-  100% { transform: rotateY(360deg); }
-}
+.card { font-size:60px; animation:flip 2s ease; }
+@keyframes flip { 100%{ transform:rotateY(360deg);} }
 
 /* APP */
-#app {
-  display: none;
-  padding-bottom: 120px;
-}
+#app { display:none; padding-bottom:120px; }
 
 /* NAV */
 .nav {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  display: flex;
-  background: white;
-  border-top: 1px solid #ccc;
+  position:fixed; bottom:0; width:100%;
+  display:flex; background:white; border-top:1px solid #ccc;
 }
-
-.nav div {
-  flex: 1;
-  text-align: center;
-  padding: 10px;
-  cursor: pointer;
-}
-
-.nav span {
-  display: block;
-  font-size: 22px;
-}
-
-.active {
-  color: #2962ff;
-}
+.nav div { flex:1; text-align:center; padding:10px; cursor:pointer; }
+.nav span { display:block; font-size:22px; }
+.active { color:#2962ff; }
 
 /* SECTIONS */
-.section { display: none; }
-.activeSection { display: block; }
+.section { display:none; }
+.activeSection { display:block; }
 
-/* SEARCH */
-.search input {
-  width: 92%;
-  margin: 15px;
-  padding: 18px;
-  font-size: 16px;
-  border-radius: 14px;
-  border: none;
+/* INPUTS */
+.search input, .targetBox input {
+  width:92%; margin:15px; padding:18px;
+  font-size:16px; border-radius:14px; border:none;
 }
-
-/* TARGET */
-.targetBox {
-  margin: 10px 15px;
-  padding: 15px;
-  background: white;
-  border-radius: 15px;
-}
-
-.targetBox input {
-  width: 100%;
-  padding: 15px;
-  font-size: 16px;
-  border-radius: 10px;
-}
+.targetBox { background:white; margin:10px 15px; padding:10px; border-radius:12px; }
 
 /* LEAGUES */
-.leagues {
-  display: flex;
-  overflow-x: auto;
-  padding: 10px;
-}
-
+.leagues { display:flex; overflow-x:auto; padding:10px; }
 .league {
-  padding: 10px 18px;
-  background: white;
-  margin-right: 10px;
-  border-radius: 20px;
-  cursor: pointer;
+  padding:10px 18px;
+  background:white;
+  margin-right:10px;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:bold;
 }
-
 .activeLeague {
-  background: #2962ff;
-  color: white;
+  background:#2962ff;
+  color:white;
 }
 
 /* MATCH */
-.match {
-  background: white;
-  margin: 15px;
-  padding: 20px;
-  border-radius: 15px;
-}
-
-.selected {
-  border: 2px solid #2962ff;
-}
-
-.pick {
-  background: #e3f2fd;
-  padding: 10px;
-  border-radius: 10px;
-  cursor: pointer;
-}
+.match { background:white; margin:15px; padding:20px; border-radius:15px; }
+.selected { border:2px solid #2962ff; }
+.pick { background:#e3f2fd; padding:10px; border-radius:10px; cursor:pointer; }
 
 /* BUTTON */
 button {
-  width: 90%;
-  margin: 10px;
-  padding: 15px;
-  border-radius: 12px;
-  border: none;
-  background: #2962ff;
-  color: white;
+  width:90%; margin:10px; padding:15px;
+  border:none; border-radius:12px;
+  background:#2962ff; color:white;
 }
 
 /* RESULT */
-.result {
-  margin: 15px;
-  padding: 15px;
-  background: white;
-  border-radius: 15px;
-}
+.result { margin:15px; padding:15px; background:white; border-radius:15px; }
 
 /* POPUP */
 .popup {
-  position: fixed;
-  bottom: -300px;
-  width: 100%;
-  background: white;
-  padding: 20px;
-  border-radius: 20px 20px 0 0;
-  transition: 0.3s;
+  position:fixed; bottom:-300px; width:100%;
+  background:white; padding:20px;
+  border-radius:20px 20px 0 0;
+  transition:0.3s;
 }
-
-.popup.show {
-  bottom: 0;
-}
-
+.popup.show { bottom:0; }
 .option {
-  padding: 15px;
-  margin: 10px 0;
-  background: #e3f2fd;
-  border-radius: 10px;
-  cursor: pointer;
+  padding:15px;
+  margin:10px 0;
+  background:#e3f2fd;
+  border-radius:10px;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -200,6 +109,7 @@ button {
 <input id="targetOdds" placeholder="e.g. 7">
 </div>
 
+<!-- LEAGUES -->
 <div class="leagues" id="leagueBar"></div>
 
 <div id="matches"></div>
@@ -214,7 +124,6 @@ button {
 <div id="result" class="result"></div>
 </div>
 
-<!-- OTHER SECTIONS -->
 <div id="chat" class="section"><div class="result">💬 Coming soon</div></div>
 <div id="bot" class="section"><div class="result">🤖 Coming soon</div></div>
 <div id="settings" class="section"><div class="result">⚙️ Settings</div></div>
@@ -239,13 +148,10 @@ const app = document.getElementById("app");
 const matches = document.getElementById("matches");
 const popup = document.getElementById("popup");
 
-setTimeout(()=>{
-  splash.style.display="none";
-  app.style.display="block";
-},2000);
+setTimeout(()=>{ splash.style.display="none"; app.style.display="block"; },2000);
 
 /* DATA */
-const leagues=["All","Premier","La Liga"];
+const leagues = ["All","Premier","La Liga"];
 
 const allMatches=[
   {id:1,name:"Arsenal vs Chelsea",league:"Premier"},
@@ -263,11 +169,7 @@ let state={};
 let currentList=[...allMatches];
 
 allMatches.forEach(m=>{
-  state[m.id]={
-    pick:options[0],
-    odds:(Math.random()*1+1.2).toFixed(2),
-    selected:false
-  };
+  state[m.id]={ pick:options[0], odds:(Math.random()*1+1.2).toFixed(2), selected:false };
 });
 
 /* LEAGUES */
@@ -282,7 +184,7 @@ leagues.forEach(l=>{
     document.querySelectorAll(".league").forEach(x=>x.classList.remove("activeLeague"));
     div.classList.add("activeLeague");
 
-    currentList = l==="All"?allMatches:allMatches.filter(m=>m.league===l);
+    currentList = l==="All" ? allMatches : allMatches.filter(m=>m.league===l);
     loadMatches(currentList);
   };
 
@@ -292,7 +194,6 @@ leagues.forEach(l=>{
 /* LOAD */
 function loadMatches(list){
   matches.innerHTML="";
-
   list.forEach(m=>{
     let s=state[m.id];
 
@@ -300,10 +201,8 @@ function loadMatches(list){
     div.className="match";
     if(s.selected) div.classList.add("selected");
 
-    div.innerHTML=`
-      <b>${m.name}</b><br><br>
-      <span class="pick">${s.pick.name}</span> | ${s.odds}
-    `;
+    div.innerHTML=`<b>${m.name}</b><br><br>
+    <span class="pick">${s.pick.name}</span> | ${s.odds}`;
 
     div.onclick=()=>{
       s.selected=!s.selected;
@@ -347,6 +246,10 @@ function openPopup(stateObj,el){
 
     popup.appendChild(d);
   });
+
+  popup.onclick=(e)=>{
+    if(e.target===popup) popup.classList.remove("show");
+  };
 }
 
 /* SEARCH */
@@ -356,69 +259,73 @@ function searchMatch(val){
 
 /* GENERATE */
 function generateSlip(){
-  let total=1;
-  let count=0;
-  let html="<b>Slip</b><br><br>";
+  popup.classList.remove("show");
+
+  let total=1,count=0,html="<b>Slip</b><br><br>";
 
   allMatches.forEach(m=>{
     let s=state[m.id];
     if(s.selected){
       total*=s.odds;
       count++;
-      html+=`${m.name} → ${s.pick.name} (${s.odds})<br>`;
+      html+=`${m.name} → ${s.pick.name}<br>`;
     }
   });
 
-  result.innerHTML = count === 0 ? "⚠️ No selections yet" :
-    html + `<br><b>Total Odds: ${total.toFixed(2)}</b>`;
+  result.innerHTML = count===0 ? "⚠️ No selections yet"
+    : html + `<br><b>Total: ${total.toFixed(2)}</b>`;
 
   switchTab(document.querySelectorAll(".nav div")[1],'picks');
 }
 
 /* SMART */
 function smartGenerate(){
-  let target=parseFloat(targetOdds.value) || 3;
+  popup.classList.remove("show");
+
+  let raw = targetOdds.value;
+  let hasTarget = raw && !isNaN(raw);
+  let target = hasTarget ? parseFloat(raw) : null;
 
   let selected = allMatches.filter(m=>state[m.id].selected);
-  if(selected.length === 0){
-    selected = [...allMatches];
+
+  if(selected.length===0){
+    selected=[...allMatches];
     selected.forEach(m=>state[m.id].selected=true);
   }
 
   selected.forEach(m=>state[m.id].pick=options[0]);
 
-  let total=calcTotal(selected);
+  let total = calcTotal(selected);
 
-  let changed=true;
-  while(total < target && changed){
-    changed=false;
+  while(hasTarget && total<target){
+    let changed=false;
 
     for(let m of selected){
       let s=state[m.id];
       let i=options.indexOf(s.pick);
 
-      if(i < options.length-1){
+      if(i<options.length-1){
         s.pick=options[i+1];
         changed=true;
         total=calcTotal(selected);
-        if(total >= target) break;
+        if(total>=target) break;
       }
     }
+
+    if(!changed) break;
   }
 
-  loadMatches(currentList);
-
-  let msg = total >= target ? "✅ Target reached"
-          : total >= target*0.8 ? "⚠️ Close to target"
-          : "❌ Cannot safely reach target";
+  let msg = !hasTarget ? "ℹ️ No target set"
+         : total>=target ? "✅ Target reached"
+         : "❌ Target not reached";
 
   let html="<b>Smart Slip</b><br><br>";
+
   selected.forEach(m=>{
-    let s=state[m.id];
-    html+=`${m.name} → ${s.pick.name} (${s.odds})<br>`;
+    html+=`${m.name} → ${state[m.id].pick.name}<br>`;
   });
 
-  html+=`<br><b>Total Odds: ${total.toFixed(2)}</b><br>${msg}`;
+  html+=`<br><b>Total: ${total.toFixed(2)}</b><br>${msg}`;
 
   result.innerHTML=html;
 
@@ -440,10 +347,7 @@ function switchTab(el,id){
   document.querySelectorAll(".nav div").forEach(x=>x.classList.remove("active"));
   el.classList.add("active");
 
-  document.querySelectorAll(".section").forEach(s=>{
-    s.classList.remove("activeSection");
-  });
-
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("activeSection"));
   document.getElementById(id).classList.add("activeSection");
 
   if(id==="home"){
