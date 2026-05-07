@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tipster AI Premium</title>
+<title>Tipster AI Ultimate</title>
 
 <style>
 
@@ -226,13 +226,6 @@ position:relative;
 overflow:hidden;
 }
 
-.match::before{
-content:"";
-position:absolute;
-inset:0;
-background:linear-gradient(135deg,transparent,rgba(255,255,255,0.03));
-}
-
 .match.selected{
 border:2px solid #00b0ff;
 box-shadow:0 0 25px #2962ff66;
@@ -283,12 +276,10 @@ margin-top:14px;
 
 .generateBtn{
 background:linear-gradient(135deg,#2962ff,#00b0ff);
-box-shadow:0 0 25px #2962ff55;
 }
 
 .smartBtn{
 background:linear-gradient(135deg,#7b1fff,#ba68ff);
-box-shadow:0 0 25px #7b1fff55;
 }
 
 .altBtn{
@@ -311,14 +302,13 @@ margin-bottom:20px;
 padding:18px;
 border-radius:24px;
 background:#0f1836;
-border:1px solid rgba(255,255,255,0.05);
 }
 
 .slipHeader{
 display:flex;
 justify-content:space-between;
-margin-bottom:16px;
 align-items:center;
+margin-bottom:16px;
 }
 
 .badge{
@@ -348,8 +338,8 @@ padding:14px;
 border-radius:18px;
 background:#151f45;
 margin-bottom:12px;
-transition:0.3s;
 position:relative;
+transition:0.3s;
 }
 
 .swipeHint{
@@ -366,8 +356,6 @@ font-size:20px;
 font-weight:bold;
 color:#00d4ff;
 }
-
-/* CODE BOX */
 
 .codeArea{
 margin-top:20px;
@@ -388,6 +376,12 @@ font-size:16px;
 outline:none;
 }
 
+.empty{
+padding:50px 20px;
+text-align:center;
+color:#b5c0e8;
+}
+
 /* NAV */
 
 .nav{
@@ -400,8 +394,8 @@ border-radius:30px;
 background:rgba(255,255,255,0.08);
 backdrop-filter:blur(20px);
 display:flex;
-align-items:center;
 justify-content:space-around;
+align-items:center;
 border:1px solid rgba(255,255,255,0.08);
 z-index:100;
 }
@@ -409,8 +403,8 @@ z-index:100;
 .navItem{
 flex:1;
 text-align:center;
-cursor:pointer;
 color:#c5d1ff;
+cursor:pointer;
 transition:0.25s;
 }
 
@@ -466,14 +460,6 @@ background:rgba(0,0,0,0.4);
 backdrop-filter:blur(14px);
 font-weight:bold;
 z-index:50;
-}
-
-/* EMPTY */
-
-.empty{
-padding:60px 20px;
-text-align:center;
-color:#b5c0e8;
 }
 
 </style>
@@ -535,15 +521,11 @@ color:#b5c0e8;
 </div>
 
 <div id="chat" class="section">
-<div class="result">
-💬 Community sharing coming soon
-</div>
+<div class="result">💬 Community sharing coming soon</div>
 </div>
 
 <div id="bot" class="section">
-<div class="result">
-🤖 AI predictions coming soon
-</div>
+<div class="result">🤖 AI predictions coming soon</div>
 </div>
 
 <div id="settings" class="section">
@@ -593,14 +575,10 @@ color:#b5c0e8;
 
 <script>
 
-/* SPLASH */
-
 setTimeout(()=>{
 document.getElementById("splash").style.display="none";
 document.getElementById("app").style.display="block";
 },1800);
-
-/* DATA */
 
 const leagues = ["All","Premier","La Liga","Bundesliga"];
 
@@ -620,8 +598,6 @@ const options = [
 {name:"Win + Over 2.5",risk:3,multiplier:2.3}
 ];
 
-/* STATE */
-
 let state = JSON.parse(localStorage.getItem("tipsterState")) || {};
 let savedCodes = JSON.parse(localStorage.getItem("tipsterCodes")) || {};
 let currentLeague = localStorage.getItem("tipsterLeague") || "All";
@@ -637,8 +613,6 @@ selected:false
 }
 });
 
-/* SAVE */
-
 function saveState(){
 localStorage.setItem("tipsterState",JSON.stringify(state));
 localStorage.setItem("tipsterLeague",currentLeague);
@@ -648,14 +622,10 @@ localStorage.setItem("tipsterCodes",JSON.stringify(savedCodes));
 
 targetOdds.value = localStorage.getItem("targetOdds") || "";
 
-/* COUNTER */
-
 function updateCounter(){
 let count = Object.values(state).filter(x=>x.selected).length;
 document.getElementById("counter").innerText = count + " Selected";
 }
-
-/* LEAGUES */
 
 const leagueBar = document.getElementById("leagueBar");
 
@@ -693,8 +663,6 @@ loadMatches(currentList);
 leagueBar.appendChild(div);
 
 });
-
-/* LOAD MATCHES */
 
 const matches = document.getElementById("matches");
 
@@ -759,8 +727,6 @@ currentLeague==="All"
 
 loadMatches(currentList);
 
-/* POPUP */
-
 const popup = document.getElementById("popup");
 
 function openPopup(stateObj,el){
@@ -818,8 +784,6 @@ popup.classList.remove("show");
 
 });
 
-/* SEARCH */
-
 function searchMatch(val){
 
 loadMatches(
@@ -830,7 +794,29 @@ m.name.toLowerCase().includes(val.toLowerCase())
 
 }
 
-/* SMART ENGINE */
+function calculateTotal(list){
+
+let total = 1;
+
+list.forEach(m=>{
+
+if(state[m.id].selected){
+
+let odd =
+parseFloat(state[m.id].odds);
+
+let multiplier =
+state[m.id].pick.multiplier;
+
+total *= odd * multiplier;
+
+}
+
+});
+
+return total;
+
+}
 
 function smartGenerate(){
 
@@ -896,47 +882,54 @@ generateSlip();
 
 }
 
-/* TOTAL */
-
-function calculateTotal(list){
-
-let total = 1;
-
-list.forEach(m=>{
-
-if(state[m.id].selected){
-
-let odd =
-parseFloat(state[m.id].odds);
-
-let multiplier =
-state[m.id].pick.multiplier;
-
-total *= odd * multiplier;
-
-}
-
-});
-
-return total;
-
-}
-
-/* GENERATE */
-
 function generateSlip(){
 
 let selected =
 allMatches.filter(m=>state[m.id].selected);
 
 if(selected.length===0){
-result.innerHTML="⚠️ No selections yet";
+
+result.innerHTML = `
+
+<div class="empty">
+⚠️ No selections yet
+</div>
+
+<div class="codeArea">
+
+<h3>🔐 Load Slip Code</h3>
+
+<input
+class="codeInput"
+id="loadCodeInput"
+placeholder="Paste slip code">
+
+<button class="altBtn"
+onclick="loadSlipCode()">
+Load Slip Code
+</button>
+
+</div>
+
+`;
+
+switchTab(document.querySelectorAll(".navItem")[1],"picks");
+
 return;
+
 }
 
-let safeHtml = buildSlip(selected,"safe");
-let balancedHtml = buildSlip(selected,"balanced");
-let riskyHtml = buildSlip(selected,"risky");
+let target =
+parseFloat(targetOdds.value);
+
+let safeHtml =
+buildSlip(selected,"safe",target);
+
+let balancedHtml =
+buildSlip(selected,"balanced",target);
+
+let riskyHtml =
+buildSlip(selected,"risky",target);
 
 let code =
 "TIP-" +
@@ -944,7 +937,8 @@ Math.random().toString(36)
 .substring(2,8)
 .toUpperCase();
 
-savedCodes[code] = JSON.stringify(state);
+savedCodes[code] =
+JSON.stringify(state);
 
 saveState();
 
@@ -957,9 +951,19 @@ ${balancedHtml}
 ${riskyHtml}
 
 <div class="codeArea">
+
 <h3>🔐 Slip Code</h3>
+
 <br>
-<b>${code}</b>
+
+<b id="generatedCode">${code}</b>
+
+<br><br>
+
+<button class="generateBtn"
+onclick="copySlipCode()">
+📋 Copy Code
+</button>
 
 <input
 class="codeInput"
@@ -984,15 +988,15 @@ switchTab(document.querySelectorAll(".navItem")[1],"picks");
 
 }
 
-/* BUILD SLIPS */
-
-function buildSlip(selected,type){
+function buildSlip(selected,type,target){
 
 let total = 1;
 
 let html = `
 <div class="slipCard">
+
 <div class="slipHeader">
+
 <h3>
 ${type==="safe"
 ? "🟢 Safer Slip"
@@ -1023,11 +1027,15 @@ option = options[0];
 }
 
 if(type==="balanced"){
-option = options[2];
+option = target && target > 10
+? options[3]
+: options[2];
 }
 
 if(type==="risky"){
-option = options[4];
+option = target && target > 15
+? options[4]
+: options[3];
 }
 
 let odd =
@@ -1038,6 +1046,7 @@ option.multiplier;
 total *= odd;
 
 html += `
+
 <div class="slipItem"
 ontouchstart="startTouch(event,${m.id})"
 ontouchmove="moveTouch(event,this)"
@@ -1046,27 +1055,57 @@ ontouchend="endTouch(event,this,${m.id})">
 <div class="swipeHint">⬅ Swipe</div>
 
 <b>${m.name}</b>
+
 <br><br>
+
 ${option.name}
 
 </div>
+
 `;
 
 });
 
 html += `
+
 <div class="total">
 Total Odds: ${total.toFixed(2)}
 </div>
 
-</div>
 `;
+
+if(target && !isNaN(target)){
+
+html += `
+
+<br>
+
+<div style="
+padding:14px;
+border-radius:18px;
+background:#101938;
+">
+
+🎯 Target Odds:
+<b>${target}</b>
+
+<br><br>
+
+${total >= target
+? "✅ Target Reached"
+: "⚠️ Below Target"}
+
+</div>
+
+`;
+
+}
+
+html += "</div>";
 
 return html;
 
 }
-
-/* LOAD CODE */
 
 function loadSlipCode(){
 
@@ -1093,7 +1132,17 @@ alert("Invalid slip code");
 
 }
 
-/* NAV */
+function copySlipCode(){
+
+let code =
+document.getElementById("generatedCode")
+.innerText;
+
+navigator.clipboard.writeText(code);
+
+alert("Slip code copied 🔥");
+
+}
 
 function switchTab(el,id){
 
@@ -1112,8 +1161,6 @@ history.pushState({page:id},"",`#${id}`);
 
 }
 
-/* BACK */
-
 window.onpopstate = ()=>{
 
 let hash =
@@ -1130,8 +1177,6 @@ document.getElementById(hash)
 }
 
 };
-
-/* SWIPE */
 
 let startX = 0;
 
@@ -1181,11 +1226,7 @@ el.style.transform="translateX(0)";
 
 }
 
-/* AUTO SAVE */
-
 targetOdds.addEventListener("input",saveState);
-
-/* INITIAL */
 
 updateCounter();
 
