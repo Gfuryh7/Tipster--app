@@ -599,6 +599,64 @@ document.getElementById("app").style.display="block";
 },1800);
 
 const leagues = ["All","Premier","La Liga","Bundesliga"];
+  const API_KEY = "3321a46c9f3453c2ece736b4f1afd08331b5892e85f288331e0958f00a1d816b";
+
+async function loadLiveMatches(){
+
+try{
+
+const response = await fetch(
+"https://v3.football.api-sports.io/fixtures?live=all",
+{
+headers:{
+"x-apisports-key": API_KEY
+}
+}
+);
+
+const data = await response.json();
+
+console.log("LIVE API DATA:", data);
+
+if(data.response && data.response.length > 0){
+
+allMatches.length = 0;
+
+data.response.forEach((game,index)=>{
+
+allMatches.push({
+id:index + 1,
+name:
+game.teams.home.name +
+" vs " +
+game.teams.away.name,
+league: game.league.name
+});
+
+});
+
+currentList = [...allMatches];
+
+loadMatches(currentList);
+  loadLiveMatches();
+
+alert("🔥 Live matches loaded successfully");
+
+}else{
+
+alert("⚠️ No live matches currently");
+
+}
+
+}catch(err){
+
+console.error(err);
+
+alert("❌ API connection failed");
+
+}
+
+}
 
 const allMatches = [
 {id:1,name:"Arsenal vs Chelsea",league:"Premier"},
