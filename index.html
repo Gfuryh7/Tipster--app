@@ -4,428 +4,476 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tipster Premium</title>
+<title>Tipster AI Premium</title>
 
 <style>
 
 *{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
 body{
-  font-family:Arial, sans-serif;
-  background:#060816;
-  color:white;
-  overflow-x:hidden;
+font-family:Arial,sans-serif;
+background:#050816;
+color:white;
+overflow-x:hidden;
 }
 
 /* BACKGROUND */
 
 .bg{
-  position:fixed;
-  inset:0;
-  background:
-  radial-gradient(circle at top left,#5227ff55,transparent 30%),
-  radial-gradient(circle at bottom right,#2962ff55,transparent 30%),
-  radial-gradient(circle at center,#00d4ff22,transparent 40%),
-  #060816;
-  z-index:-3;
+position:fixed;
+inset:0;
+background:
+radial-gradient(circle at top left,#612cff55,transparent 30%),
+radial-gradient(circle at bottom right,#00b0ff44,transparent 35%),
+radial-gradient(circle at center,#ffffff11,transparent 50%),
+#050816;
+z-index:-3;
 }
 
 .stars{
-  position:fixed;
-  inset:0;
-  background-image:
-  radial-gradient(white 1px, transparent 1px);
-  background-size:40px 40px;
-  opacity:0.08;
-  animation:moveStars 60s linear infinite;
-  z-index:-2;
+position:fixed;
+inset:0;
+background-image:radial-gradient(white 1px,transparent 1px);
+background-size:40px 40px;
+opacity:0.07;
+animation:moveStars 70s linear infinite;
+z-index:-2;
 }
 
 @keyframes moveStars{
-  from{transform:translateY(0);}
-  to{transform:translateY(-200px);}
+from{transform:translateY(0);}
+to{transform:translateY(-200px);}
 }
 
 /* SPLASH */
 
 #splash{
-  position:fixed;
-  inset:0;
-  background:linear-gradient(135deg,#0d1025,#2d1f66);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  z-index:9999;
+position:fixed;
+inset:0;
+background:linear-gradient(135deg,#091024,#27185f);
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:9999;
 }
 
-.logoCard{
-  width:120px;
-  height:120px;
-  border-radius:30px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:60px;
-  backdrop-filter:blur(18px);
-  background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.1);
-  box-shadow:0 0 40px #2962ff66;
-  animation:float 3s infinite ease-in-out;
+.logo{
+width:130px;
+height:130px;
+border-radius:35px;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:64px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,0.1);
+box-shadow:0 0 40px #2962ff66;
+animation:float 3s ease-in-out infinite;
 }
 
 @keyframes float{
-  0%{transform:translateY(0px);}
-  50%{transform:translateY(-10px);}
-  100%{transform:translateY(0px);}
+0%{transform:translateY(0);}
+50%{transform:translateY(-10px);}
+100%{transform:translateY(0);}
 }
 
-.splashText{
-  margin-top:20px;
-  font-size:32px;
-  font-weight:bold;
+.splashTitle{
+margin-top:18px;
+font-size:36px;
+font-weight:bold;
 }
 
 /* APP */
 
 #app{
-  display:none;
-  padding-bottom:140px;
+display:none;
+padding-bottom:140px;
+}
+
+.section{
+display:none;
+}
+
+.activeSection{
+display:block;
 }
 
 /* HEADER */
 
 .header{
-  padding:20px;
-  padding-top:40px;
+padding:25px 20px 10px;
 }
 
 .title{
-  font-size:34px;
-  font-weight:bold;
+font-size:34px;
+font-weight:bold;
 }
 
 .subtitle{
-  color:#aab3d0;
-  margin-top:5px;
+margin-top:6px;
+color:#b5c0e8;
 }
 
 /* SEARCH */
 
 .searchWrap{
-  padding:0 18px;
+padding:12px 18px;
 }
 
 .searchBox{
-  position:relative;
+position:relative;
 }
 
 .searchBox input{
-  width:100%;
-  padding:20px 20px 20px 55px;
-  border:none;
-  outline:none;
-  border-radius:22px;
-  background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(14px);
-  color:white;
-  font-size:17px;
-  border:1px solid rgba(255,255,255,0.1);
+width:100%;
+padding:22px 20px 22px 58px;
+border:none;
+outline:none;
+border-radius:24px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(16px);
+color:white;
+font-size:17px;
+border:1px solid rgba(255,255,255,0.08);
 }
 
 .searchIcon{
-  position:absolute;
-  left:18px;
-  top:18px;
-  font-size:20px;
-  opacity:0.7;
+position:absolute;
+left:18px;
+top:18px;
+font-size:22px;
+opacity:0.8;
 }
 
 /* TARGET */
 
 .targetBox{
-  margin:18px;
-  padding:18px;
-  border-radius:24px;
-  background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(18px);
-  border:1px solid rgba(255,255,255,0.08);
+margin:0 18px 18px;
+padding:20px;
+border-radius:28px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(16px);
+border:1px solid rgba(255,255,255,0.08);
 }
 
-.targetTitle{
-  font-size:15px;
-  margin-bottom:12px;
-  color:#dce3ff;
+.targetLabel{
+margin-bottom:12px;
+font-size:15px;
+color:#dfe6ff;
 }
 
 .targetBox input{
-  width:100%;
-  padding:18px;
-  border:none;
-  border-radius:18px;
-  outline:none;
-  background:#0f1733;
-  color:white;
-  font-size:18px;
+width:100%;
+padding:18px;
+border:none;
+border-radius:18px;
+background:#101938;
+color:white;
+font-size:18px;
+outline:none;
 }
 
 /* LEAGUES */
 
 .leagues{
-  display:flex;
-  overflow-x:auto;
-  padding:5px 18px 20px;
-  gap:12px;
+display:flex;
+overflow-x:auto;
+gap:12px;
+padding:5px 18px 20px;
 }
 
 .leagues::-webkit-scrollbar{
-  display:none;
+display:none;
 }
 
 .league{
-  padding:14px 22px;
-  border-radius:20px;
-  background:rgba(255,255,255,0.08);
-  white-space:nowrap;
-  font-weight:bold;
-  cursor:pointer;
-  border:1px solid rgba(255,255,255,0.06);
-  transition:0.25s;
+padding:14px 22px;
+border-radius:20px;
+white-space:nowrap;
+background:rgba(255,255,255,0.08);
+border:1px solid rgba(255,255,255,0.08);
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
 }
 
 .activeLeague{
-  background:linear-gradient(135deg,#2962ff,#00b0ff);
-  box-shadow:0 0 25px #2962ff88;
+background:linear-gradient(135deg,#2962ff,#00b0ff);
+box-shadow:0 0 25px #2962ff66;
 }
 
-/* MATCHES */
+/* MATCH */
 
 #matches{
-  padding:0 14px;
+padding:0 14px;
 }
 
 .match{
-  margin-bottom:18px;
-  padding:22px;
-  border-radius:28px;
-  background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,0.08);
-  transition:0.25s;
-  position:relative;
-  overflow:hidden;
+margin-bottom:18px;
+padding:22px;
+border-radius:30px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(18px);
+border:1px solid rgba(255,255,255,0.08);
+transition:0.25s;
+position:relative;
+overflow:hidden;
 }
 
 .match::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(135deg,transparent,rgba(255,255,255,0.03));
+content:"";
+position:absolute;
+inset:0;
+background:linear-gradient(135deg,transparent,rgba(255,255,255,0.03));
 }
 
-.match:hover{
-  transform:translateY(-2px);
-}
-
-.selected{
-  border:2px solid #00b0ff;
-  box-shadow:0 0 25px #2962ff66;
+.match.selected{
+border:2px solid #00b0ff;
+box-shadow:0 0 25px #2962ff66;
 }
 
 .matchTitle{
-  font-size:20px;
-  font-weight:bold;
+font-size:20px;
+font-weight:bold;
 }
 
 .matchBottom{
-  margin-top:16px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-top:16px;
 }
 
 .pick{
-  padding:12px 16px;
-  border-radius:14px;
-  background:#0f1733;
-  cursor:pointer;
+padding:12px 16px;
+border-radius:14px;
+background:#111c42;
+cursor:pointer;
 }
 
 .odds{
-  font-size:20px;
-  font-weight:bold;
-  color:#00d4ff;
+font-size:20px;
+font-weight:bold;
+color:#00d4ff;
 }
 
-/* ACTION BUTTONS */
+/* BUTTONS */
 
 .actionButtons{
-  padding:10px 18px;
+padding:10px 18px;
 }
 
-.actionButtons button{
-  width:100%;
-  margin-top:14px;
-  padding:20px;
-  border:none;
-  border-radius:24px;
-  color:white;
-  font-size:17px;
-  font-weight:bold;
-  cursor:pointer;
+button{
+width:100%;
+padding:20px;
+border:none;
+border-radius:24px;
+font-size:17px;
+font-weight:bold;
+cursor:pointer;
+color:white;
+margin-top:14px;
 }
 
 .generateBtn{
-  background:linear-gradient(135deg,#2962ff,#00b0ff);
-  box-shadow:0 0 25px #2962ff55;
+background:linear-gradient(135deg,#2962ff,#00b0ff);
+box-shadow:0 0 25px #2962ff55;
 }
 
 .smartBtn{
-  background:linear-gradient(135deg,#7b1fff,#b388ff);
-  box-shadow:0 0 25px #7b1fff55;
+background:linear-gradient(135deg,#7b1fff,#ba68ff);
+box-shadow:0 0 25px #7b1fff55;
+}
+
+.altBtn{
+background:linear-gradient(135deg,#00b894,#00cec9);
 }
 
 /* RESULT */
 
 .result{
-  margin:18px;
-  padding:22px;
-  border-radius:28px;
-  background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(18px);
-  border:1px solid rgba(255,255,255,0.08);
+margin:18px;
+padding:22px;
+border-radius:30px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(18px);
+border:1px solid rgba(255,255,255,0.08);
+}
+
+.slipCard{
+margin-bottom:20px;
+padding:18px;
+border-radius:24px;
+background:#0f1836;
+border:1px solid rgba(255,255,255,0.05);
+}
+
+.slipHeader{
+display:flex;
+justify-content:space-between;
+margin-bottom:16px;
+align-items:center;
+}
+
+.badge{
+padding:8px 14px;
+border-radius:20px;
+font-size:12px;
+font-weight:bold;
+}
+
+.safe{
+background:#00c85322;
+color:#69f0ae;
+}
+
+.balance{
+background:#ffab0022;
+color:#ffd54f;
+}
+
+.risky{
+background:#ff174422;
+color:#ff8a80;
 }
 
 .slipItem{
-  margin-bottom:14px;
-  padding:16px;
-  border-radius:18px;
-  background:#0f1733;
-  position:relative;
-  transition:0.3s;
-  touch-action:pan-y;
+padding:14px;
+border-radius:18px;
+background:#151f45;
+margin-bottom:12px;
+transition:0.3s;
+position:relative;
 }
 
-.removeHint{
-  position:absolute;
-  right:15px;
-  top:16px;
-  color:#ff5252;
-  font-size:12px;
+.swipeHint{
+position:absolute;
+right:12px;
+top:12px;
+font-size:11px;
+color:#ff8a80;
+}
+
+.total{
+margin-top:16px;
+font-size:20px;
+font-weight:bold;
+color:#00d4ff;
+}
+
+/* CODE BOX */
+
+.codeArea{
+margin-top:20px;
+padding:18px;
+border-radius:20px;
+background:#101938;
+}
+
+.codeInput{
+width:100%;
+padding:18px;
+border:none;
+border-radius:16px;
+background:#17234d;
+color:white;
+margin-top:12px;
+font-size:16px;
+outline:none;
 }
 
 /* NAV */
 
 .nav{
-  position:fixed;
-  left:12px;
-  right:12px;
-  bottom:15px;
-  height:90px;
-  border-radius:30px;
-  background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,0.08);
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-  z-index:100;
+position:fixed;
+left:12px;
+right:12px;
+bottom:14px;
+height:90px;
+border-radius:30px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(20px);
+display:flex;
+align-items:center;
+justify-content:space-around;
+border:1px solid rgba(255,255,255,0.08);
+z-index:100;
 }
 
 .navItem{
-  flex:1;
-  text-align:center;
-  cursor:pointer;
-  transition:0.25s;
-  color:#bfc9f2;
-}
-
-.navIcon{
-  font-size:28px;
-}
-
-.navText{
-  font-size:13px;
-  margin-top:5px;
+flex:1;
+text-align:center;
+cursor:pointer;
+color:#c5d1ff;
+transition:0.25s;
 }
 
 .activeNav{
-  color:#00d4ff;
-  transform:translateY(-4px);
+color:#00d4ff;
+transform:translateY(-3px);
+}
+
+.navIcon{
+font-size:28px;
+}
+
+.navText{
+font-size:13px;
+margin-top:5px;
 }
 
 /* POPUP */
 
 .popup{
-  position:fixed;
-  left:0;
-  right:0;
-  bottom:-500px;
-  background:#0d1430;
-  padding:24px;
-  border-radius:35px 35px 0 0;
-  transition:0.35s;
-  z-index:1000;
-  border-top:1px solid rgba(255,255,255,0.08);
+position:fixed;
+left:0;
+right:0;
+bottom:-600px;
+padding:24px;
+background:#0b1330;
+border-radius:35px 35px 0 0;
+transition:0.35s;
+z-index:1000;
 }
 
 .popup.show{
-  bottom:0;
+bottom:0;
 }
 
 .option{
-  margin-top:14px;
-  padding:18px;
-  border-radius:18px;
-  background:#111b3f;
-  cursor:pointer;
-  transition:0.25s;
+margin-top:14px;
+padding:18px;
+border-radius:18px;
+background:#131d44;
+cursor:pointer;
 }
 
-.option:hover{
-  background:#1b2a61;
-}
+/* COUNTER */
 
-.small{
-  color:#bfc9f2;
-  margin-top:8px;
-}
-
-/* SECTIONS */
-
-.section{
-  display:none;
-}
-
-.activeSection{
-  display:block;
-}
-
-/* BADGES */
-
-.selectedCounter{
-  position:fixed;
-  top:20px;
-  right:18px;
-  padding:12px 18px;
-  border-radius:20px;
-  background:rgba(0,0,0,0.4);
-  backdrop-filter:blur(15px);
-  border:1px solid rgba(255,255,255,0.08);
-  z-index:50;
-  font-weight:bold;
+.counter{
+position:fixed;
+top:20px;
+right:18px;
+padding:12px 18px;
+border-radius:20px;
+background:rgba(0,0,0,0.4);
+backdrop-filter:blur(14px);
+font-weight:bold;
+z-index:50;
 }
 
 /* EMPTY */
 
 .empty{
-  text-align:center;
-  padding:50px 20px;
-  color:#bfc9f2;
+padding:60px 20px;
+text-align:center;
+color:#b5c0e8;
 }
 
 </style>
@@ -437,32 +485,31 @@ body{
 <div class="stars"></div>
 
 <div id="splash">
-  <div class="logoCard">🃏</div>
-  <div class="splashText">Tipster</div>
+<div class="logo">🃏</div>
+<div class="splashTitle">Tipster AI</div>
 </div>
 
 <div id="app">
 
-<div class="selectedCounter" id="selectedCounter">0 Selected</div>
+<div class="counter" id="counter">0 Selected</div>
 
-<!-- HOME -->
 <div id="home" class="section activeSection">
 
 <div class="header">
-  <div class="title">Tipster</div>
-  <div class="subtitle">Smart betting assistant</div>
+<div class="title">Tipster AI</div>
+<div class="subtitle">Premium betting intelligence</div>
 </div>
 
 <div class="searchWrap">
-  <div class="searchBox">
-    <div class="searchIcon">🔍</div>
-    <input id="searchInput" placeholder="Search teams..." oninput="searchMatch(this.value)">
-  </div>
+<div class="searchBox">
+<div class="searchIcon">🔍</div>
+<input placeholder="Search teams..." oninput="searchMatch(this.value)">
+</div>
 </div>
 
 <div class="targetBox">
-  <div class="targetTitle">🎯 Target Odds</div>
-  <input id="targetOdds" placeholder="Enter target odds">
+<div class="targetLabel">🎯 Target Odds</div>
+<input id="targetOdds" placeholder="Example: 10">
 </div>
 
 <div class="leagues" id="leagueBar"></div>
@@ -470,71 +517,74 @@ body{
 <div id="matches"></div>
 
 <div class="actionButtons">
-  <button class="generateBtn" onclick="generateSlip()">Generate Slip</button>
-  <button class="smartBtn" onclick="smartGenerate()">🧠 Smart Slip</button>
+<button class="generateBtn" onclick="generateSlip()">Generate Slip</button>
+<button class="smartBtn" onclick="smartGenerate()">🧠 Smart Slip</button>
 </div>
 
 </div>
 
-<!-- PICKS -->
 <div id="picks" class="section">
-  <div class="header">
-    <div class="title">Your Slip</div>
-    <div class="subtitle">Swipe left to remove</div>
-  </div>
 
-  <div id="result" class="result"></div>
+<div class="header">
+<div class="title">Slip Center</div>
+<div class="subtitle">Safe • Balanced • Aggressive</div>
+</div>
+
+<div id="result" class="result"></div>
+
 </div>
 
 <div id="chat" class="section">
-  <div class="result">💬 Community chat coming soon</div>
+<div class="result">
+💬 Community sharing coming soon
+</div>
 </div>
 
 <div id="bot" class="section">
-  <div class="result">🤖 AI assistant coming soon</div>
+<div class="result">
+🤖 AI predictions coming soon
+</div>
 </div>
 
 <div id="settings" class="section">
-  <div class="result">
-    ⚙️ Settings Area
-    <br><br>
-    ✔ Persistent saves enabled
-    <br>
-    ✔ Premium UI enabled
-    <br>
-    ✔ Smart slip system active
-  </div>
+<div class="result">
+⚙️ Settings & API area
+<br><br>
+✔ Persistent saves
+<br>
+✔ Smart odds engine
+<br>
+✔ Slip codes enabled
+</div>
 </div>
 
 </div>
-
-<!-- NAV -->
 
 <div class="nav">
 
 <div class="navItem activeNav" onclick="switchTab(this,'home')">
-  <div class="navIcon">🏠</div>
-  <div class="navText">Home</div>
+<div class="navIcon">🏠</div>
+<div class="navText">Home</div>
 </div>
 
 <div class="navItem" onclick="switchTab(this,'picks')">
-  <div class="navIcon">📊</div>
-  <div class="navText">Slip</div>
+<div class="navIcon">📊</div>
+<div class="navText">Slip</div>
 </div>
 
 <div class="navItem" onclick="switchTab(this,'chat')">
-  <div class="navIcon">💬</div>
-  <div class="navText">Chat</div>
+<div class="navIcon">💬</div>
+<div class="navText">Chat</div>
 </div>
 
 <div class="navItem" onclick="switchTab(this,'bot')">
-  <div class="navIcon">🤖</div>
-  <div class="navText">Bot</div>
+<div class="navIcon">🤖</div>
+<div class="navText">Bot</div>
 </div>
 
 <div class="navItem" onclick="switchTab(this,'settings')">
-  <div class="navIcon">⚙️</div>
-  <div class="navText">Settings</div>
+<div class="navIcon">⚙️</div>
+<div class="navText">Settings</div>
 </div>
 
 </div>
@@ -545,12 +595,9 @@ body{
 
 /* SPLASH */
 
-const splash = document.getElementById("splash");
-const app = document.getElementById("app");
-
 setTimeout(()=>{
-  splash.style.display="none";
-  app.style.display="block";
+document.getElementById("splash").style.display="none";
+document.getElementById("app").style.display="block";
 },1800);
 
 /* DATA */
@@ -558,55 +605,54 @@ setTimeout(()=>{
 const leagues = ["All","Premier","La Liga","Bundesliga"];
 
 const allMatches = [
-  {id:1,name:"Arsenal vs Chelsea",league:"Premier"},
-  {id:2,name:"Barcelona vs Sevilla",league:"La Liga"},
-  {id:3,name:"Bayern vs Dortmund",league:"Bundesliga"},
-  {id:4,name:"Liverpool vs Spurs",league:"Premier"},
-  {id:5,name:"Real Madrid vs Valencia",league:"La Liga"}
+{id:1,name:"Arsenal vs Chelsea",league:"Premier"},
+{id:2,name:"Barcelona vs Sevilla",league:"La Liga"},
+{id:3,name:"Bayern vs Dortmund",league:"Bundesliga"},
+{id:4,name:"Liverpool vs Spurs",league:"Premier"},
+{id:5,name:"Real Madrid vs Valencia",league:"La Liga"}
 ];
 
 const options = [
-  {name:"Over 1.5",risk:1},
-  {name:"Double Chance",risk:2},
-  {name:"BTTS",risk:3}
+{name:"Over 1.5",risk:1,multiplier:1.4},
+{name:"Double Chance",risk:1,multiplier:1.3},
+{name:"Over 2.5",risk:2,multiplier:1.7},
+{name:"BTTS",risk:2,multiplier:1.8},
+{name:"Win + Over 2.5",risk:3,multiplier:2.3}
 ];
 
 /* STATE */
 
 let state = JSON.parse(localStorage.getItem("tipsterState")) || {};
+let savedCodes = JSON.parse(localStorage.getItem("tipsterCodes")) || {};
 let currentLeague = localStorage.getItem("tipsterLeague") || "All";
 let currentList = [...allMatches];
 
-/* INIT */
-
 allMatches.forEach(m=>{
-  if(!state[m.id]){
-    state[m.id]={
-      pick:options[0],
-      odds:(Math.random()*1+1.2).toFixed(2),
-      selected:false
-    };
-  }
+if(!state[m.id]){
+state[m.id]={
+pick:options[0],
+odds:(Math.random()*1+1.2).toFixed(2),
+selected:false
+};
+}
 });
 
 /* SAVE */
 
 function saveState(){
-  localStorage.setItem("tipsterState",JSON.stringify(state));
-  localStorage.setItem("targetOdds",targetOdds.value);
-  localStorage.setItem("tipsterLeague",currentLeague);
+localStorage.setItem("tipsterState",JSON.stringify(state));
+localStorage.setItem("tipsterLeague",currentLeague);
+localStorage.setItem("targetOdds",targetOdds.value);
+localStorage.setItem("tipsterCodes",JSON.stringify(savedCodes));
 }
-
-/* RESTORE */
 
 targetOdds.value = localStorage.getItem("targetOdds") || "";
 
 /* COUNTER */
 
 function updateCounter(){
-  let count = Object.values(state).filter(x=>x.selected).length;
-  document.getElementById("selectedCounter").innerText =
-  count + " Selected";
+let count = Object.values(state).filter(x=>x.selected).length;
+document.getElementById("counter").innerText = count + " Selected";
 }
 
 /* LEAGUES */
@@ -614,32 +660,38 @@ function updateCounter(){
 const leagueBar = document.getElementById("leagueBar");
 
 leagues.forEach(l=>{
-  let div = document.createElement("div");
-  div.className = "league";
-  div.innerText = l;
 
-  if(l===currentLeague){
-    div.classList.add("activeLeague");
-  }
+let div = document.createElement("div");
 
-  div.onclick = ()=>{
-    currentLeague = l;
+div.className="league";
+div.innerText=l;
 
-    document.querySelectorAll(".league")
-    .forEach(x=>x.classList.remove("activeLeague"));
+if(l===currentLeague){
+div.classList.add("activeLeague");
+}
 
-    div.classList.add("activeLeague");
+div.onclick=()=>{
 
-    currentList =
-      l==="All"
-      ? allMatches
-      : allMatches.filter(m=>m.league===l);
+currentLeague=l;
 
-    saveState();
-    loadMatches(currentList);
-  };
+document.querySelectorAll(".league")
+.forEach(x=>x.classList.remove("activeLeague"));
 
-  leagueBar.appendChild(div);
+div.classList.add("activeLeague");
+
+currentList =
+l==="All"
+? allMatches
+: allMatches.filter(m=>m.league===l);
+
+saveState();
+
+loadMatches(currentList);
+
+};
+
+leagueBar.appendChild(div);
+
 });
 
 /* LOAD MATCHES */
@@ -648,52 +700,56 @@ const matches = document.getElementById("matches");
 
 function loadMatches(list){
 
-  matches.innerHTML = "";
+matches.innerHTML="";
 
-  if(list.length===0){
-    matches.innerHTML =
-    '<div class="empty">No matches found</div>';
-    return;
-  }
+if(list.length===0){
+matches.innerHTML='<div class="empty">No matches found</div>';
+return;
+}
 
-  list.forEach(m=>{
+list.forEach(m=>{
 
-    let s = state[m.id];
+let s = state[m.id];
 
-    let div = document.createElement("div");
-    div.className = "match";
+let div = document.createElement("div");
 
-    if(s.selected){
-      div.classList.add("selected");
-    }
+div.className="match";
 
-    div.innerHTML = `
-      <div class="matchTitle">${m.name}</div>
+if(s.selected){
+div.classList.add("selected");
+}
 
-      <div class="matchBottom">
-        <div class="pick">${s.pick.name}</div>
-        <div class="odds">${s.odds}</div>
-      </div>
-    `;
+div.innerHTML=`
+<div class="matchTitle">${m.name}</div>
 
-    div.onclick = ()=>{
-      s.selected = !s.selected;
+<div class="matchBottom">
+<div class="pick">${s.pick.name}</div>
+<div class="odds">${s.odds}</div>
+</div>
+`;
 
-      div.classList.toggle("selected");
+div.onclick=()=>{
 
-      saveState();
-      updateCounter();
-    };
+s.selected=!s.selected;
 
-    div.querySelector(".pick").onclick=(e)=>{
-      e.stopPropagation();
-      openPopup(s,div.querySelector(".pick"));
-    };
+div.classList.toggle("selected");
 
-    matches.appendChild(div);
-  });
+saveState();
+updateCounter();
 
-  updateCounter();
+};
+
+div.querySelector(".pick").onclick=(e)=>{
+e.stopPropagation();
+openPopup(s,div.querySelector(".pick"));
+};
+
+matches.appendChild(div);
+
+});
+
+updateCounter();
+
 }
 
 currentList =
@@ -709,69 +765,160 @@ const popup = document.getElementById("popup");
 
 function openPopup(stateObj,el){
 
-  popup.classList.add("show");
+popup.classList.add("show");
 
-  popup.innerHTML = `
-    <h2>Select Prediction</h2>
-    <div class="small">
-      🟢 Safe → 🟡 Balanced → 🔴 Risky
-    </div>
-  `;
+popup.innerHTML="<h2>Select Prediction</h2>";
 
-  options.forEach(opt=>{
+options.forEach(opt=>{
 
-    let risk =
-      opt.risk===1 ? "🟢 Safe" :
-      opt.risk===2 ? "🟡 Balanced" :
-      "🔴 Risky";
+let d = document.createElement("div");
 
-    let d = document.createElement("div");
+d.className="option";
 
-    d.className = "option";
+let risk =
+opt.risk===1 ? "🟢 Safer" :
+opt.risk===2 ? "🟡 Balanced" :
+"🔴 Aggressive";
 
-    d.innerHTML = `
-      <b>${opt.name}</b>
-      <br>
-      <small>${risk}</small>
-    `;
+d.innerHTML=`
+<b>${opt.name}</b>
+<br>
+<small>${risk}</small>
+`;
 
-    d.onclick=()=>{
-      stateObj.pick = opt;
-      el.innerText = opt.name;
+d.onclick=()=>{
 
-      popup.classList.remove("show");
+stateObj.pick=opt;
 
-      saveState();
-    };
+el.innerText=opt.name;
 
-    popup.appendChild(d);
+popup.classList.remove("show");
 
-  });
+saveState();
+
+};
+
+popup.appendChild(d);
+
+});
 
 }
 
 document.addEventListener("click",(e)=>{
-  if(
-    popup.classList.contains("show")
-    &&
-    !popup.contains(e.target)
-    &&
-    !e.target.classList.contains("pick")
-  ){
-    popup.classList.remove("show");
-  }
+
+if(
+popup.classList.contains("show")
+&&
+!popup.contains(e.target)
+&&
+!e.target.classList.contains("pick")
+){
+popup.classList.remove("show");
+}
+
 });
 
 /* SEARCH */
 
 function searchMatch(val){
 
-  loadMatches(
-    currentList.filter(m=>
-      m.name.toLowerCase()
-      .includes(val.toLowerCase())
-    )
-  );
+loadMatches(
+currentList.filter(m=>
+m.name.toLowerCase().includes(val.toLowerCase())
+)
+);
+
+}
+
+/* SMART ENGINE */
+
+function smartGenerate(){
+
+let target = parseFloat(targetOdds.value);
+
+let selected = allMatches.filter(m=>state[m.id].selected);
+
+if(selected.length===0){
+
+selected=[...allMatches];
+
+selected.forEach(m=>{
+state[m.id].selected=true;
+});
+
+}
+
+selected.forEach(m=>{
+state[m.id].pick=options[0];
+});
+
+let total = calculateTotal(selected);
+
+if(!isNaN(target)){
+
+while(total < target){
+
+let upgraded = false;
+
+for(let m of selected){
+
+let s = state[m.id];
+
+let index = options.findIndex(o=>o.name===s.pick.name);
+
+if(index < options.length-1){
+
+s.pick = options[index+1];
+
+upgraded = true;
+
+total = calculateTotal(selected);
+
+if(total >= target){
+break;
+}
+
+}
+
+}
+
+if(!upgraded){
+break;
+}
+
+}
+
+}
+
+saveState();
+
+generateSlip();
+
+}
+
+/* TOTAL */
+
+function calculateTotal(list){
+
+let total = 1;
+
+list.forEach(m=>{
+
+if(state[m.id].selected){
+
+let odd =
+parseFloat(state[m.id].odds);
+
+let multiplier =
+state[m.id].pick.multiplier;
+
+total *= odd * multiplier;
+
+}
+
+});
+
+return total;
 
 }
 
@@ -779,236 +926,258 @@ function searchMatch(val){
 
 function generateSlip(){
 
-  popup.classList.remove("show");
+let selected =
+allMatches.filter(m=>state[m.id].selected);
 
-  let total = 1;
-  let count = 0;
-
-  let html = `
-    <h2>📊 Slip Generated</h2>
-    <br>
-  `;
-
-  allMatches.forEach(m=>{
-
-    let s = state[m.id];
-
-    if(s.selected){
-
-      total *= parseFloat(s.odds);
-
-      count++;
-
-      html += `
-      <div class="slipItem"
-      ontouchstart="startTouch(event,${m.id})"
-      ontouchmove="moveTouch(event,this)"
-      ontouchend="endTouch(event,this,${m.id})">
-
-      <div class="removeHint">⬅ Swipe</div>
-
-      <b>${m.name}</b>
-      <br><br>
-      ${s.pick.name}
-      </div>
-      `;
-    }
-
-  });
-
-  if(count===0){
-    html = "⚠️ No selections yet";
-  }else{
-
-    let code =
-    "TIP-" +
-    Math.random().toString(36)
-    .substring(2,8).toUpperCase();
-
-    html += `
-      <br>
-      <h3>Total Odds: ${total.toFixed(2)}</h3>
-      <br>
-      🔐 Slip Code:
-      <b>${code}</b>
-    `;
-  }
-
-  result.innerHTML = html;
-
-  switchTab(
-    document.querySelectorAll(".navItem")[1],
-    "picks"
-  );
+if(selected.length===0){
+result.innerHTML="⚠️ No selections yet";
+return;
 }
 
-/* SMART */
+let safeHtml = buildSlip(selected,"safe");
+let balancedHtml = buildSlip(selected,"balanced");
+let riskyHtml = buildSlip(selected,"risky");
 
-function smartGenerate(){
+let code =
+"TIP-" +
+Math.random().toString(36)
+.substring(2,8)
+.toUpperCase();
 
-  popup.classList.remove("show");
+savedCodes[code] = JSON.stringify(state);
 
-  let raw = targetOdds.value;
+saveState();
 
-  let hasTarget =
-  raw && !isNaN(raw);
+result.innerHTML = `
 
-  let target =
-  hasTarget
-  ? parseFloat(raw)
-  : null;
+${safeHtml}
 
-  let selected =
-  allMatches.filter(m=>state[m.id].selected);
+${balancedHtml}
 
-  if(selected.length===0){
+${riskyHtml}
 
-    selected=[...allMatches];
+<div class="codeArea">
+<h3>🔐 Slip Code</h3>
+<br>
+<b>${code}</b>
 
-    selected.forEach(m=>{
-      state[m.id].selected=true;
-    });
+<input
+class="codeInput"
+id="loadCodeInput"
+placeholder="Paste code to load slip">
 
-  }
+<button class="altBtn"
+onclick="loadSlipCode()">
+Load Slip Code
+</button>
 
-  selected.forEach(m=>{
-    state[m.id].pick=options[0];
-  });
+<button class="smartBtn"
+onclick="smartGenerate()">
+🔄 Generate Again
+</button>
 
-  let total = calcTotal(selected);
+</div>
 
-  while(hasTarget && total<target){
+`;
 
-    let changed = false;
+switchTab(document.querySelectorAll(".navItem")[1],"picks");
 
-    for(let m of selected){
-
-      let s = state[m.id];
-
-      let i =
-      options.indexOf(s.pick);
-
-      if(i<options.length-1){
-
-        s.pick=options[i+1];
-
-        changed=true;
-
-        total=calcTotal(selected);
-
-        if(total>=target) break;
-      }
-
-    }
-
-    if(!changed) break;
-  }
-
-  saveState();
-
-  generateSlip();
 }
 
-/* TOTAL */
+/* BUILD SLIPS */
 
-function calcTotal(list){
+function buildSlip(selected,type){
 
-  let t=1;
+let total = 1;
 
-  list.forEach(m=>{
+let html = `
+<div class="slipCard">
+<div class="slipHeader">
+<h3>
+${type==="safe"
+? "🟢 Safer Slip"
+: type==="balanced"
+? "🟡 Balanced Slip"
+: "🔴 Aggressive Slip"}
+</h3>
 
-    if(state[m.id].selected){
-      t*=parseFloat(state[m.id].odds);
-    }
+<div class="badge ${
+type==="safe"
+? "safe"
+: type==="balanced"
+? "balance"
+: "risky"
+}">
+${type.toUpperCase()}
+</div>
 
-  });
+</div>
+`;
 
-  return t;
+selected.forEach(m=>{
+
+let option;
+
+if(type==="safe"){
+option = options[0];
 }
 
-/* NAVIGATION */
+if(type==="balanced"){
+option = options[2];
+}
+
+if(type==="risky"){
+option = options[4];
+}
+
+let odd =
+parseFloat(state[m.id].odds)
+*
+option.multiplier;
+
+total *= odd;
+
+html += `
+<div class="slipItem"
+ontouchstart="startTouch(event,${m.id})"
+ontouchmove="moveTouch(event,this)"
+ontouchend="endTouch(event,this,${m.id})">
+
+<div class="swipeHint">⬅ Swipe</div>
+
+<b>${m.name}</b>
+<br><br>
+${option.name}
+
+</div>
+`;
+
+});
+
+html += `
+<div class="total">
+Total Odds: ${total.toFixed(2)}
+</div>
+
+</div>
+`;
+
+return html;
+
+}
+
+/* LOAD CODE */
+
+function loadSlipCode(){
+
+let val =
+document.getElementById("loadCodeInput")
+.value
+.trim();
+
+if(savedCodes[val]){
+
+state = JSON.parse(savedCodes[val]);
+
+saveState();
+
+loadMatches(currentList);
+
+generateSlip();
+
+alert("Slip loaded successfully 🔥");
+
+}else{
+alert("Invalid slip code");
+}
+
+}
+
+/* NAV */
 
 function switchTab(el,id){
 
-  document.querySelectorAll(".navItem")
-  .forEach(x=>x.classList.remove("activeNav"));
+document.querySelectorAll(".navItem")
+.forEach(x=>x.classList.remove("activeNav"));
 
-  el.classList.add("activeNav");
+el.classList.add("activeNav");
 
-  document.querySelectorAll(".section")
-  .forEach(s=>s.classList.remove("activeSection"));
+document.querySelectorAll(".section")
+.forEach(s=>s.classList.remove("activeSection"));
 
-  document.getElementById(id)
-  .classList.add("activeSection");
+document.getElementById(id)
+.classList.add("activeSection");
 
-  history.pushState({page:id},"",`#${id}`);
+history.pushState({page:id},"",`#${id}`);
 
 }
 
-/* BACK SUPPORT */
+/* BACK */
 
-window.onpopstate = function(){
+window.onpopstate = ()=>{
 
-  let hash =
-  location.hash.replace("#","");
+let hash =
+location.hash.replace("#","");
 
-  if(hash){
+if(hash){
 
-    document.querySelectorAll(".section")
-    .forEach(s=>s.classList.remove("activeSection"));
+document.querySelectorAll(".section")
+.forEach(s=>s.classList.remove("activeSection"));
 
-    document.getElementById(hash)
-    .classList.add("activeSection");
-  }
+document.getElementById(hash)
+.classList.add("activeSection");
+
+}
 
 };
 
-/* SWIPE REMOVE */
+/* SWIPE */
 
 let startX = 0;
 
 function startTouch(e,id){
-  startX = e.touches[0].clientX;
+startX = e.touches[0].clientX;
 }
 
 function moveTouch(e,el){
 
-  let currentX =
-  e.touches[0].clientX;
+let current =
+e.touches[0].clientX;
 
-  let diff =
-  currentX - startX;
+let diff =
+current - startX;
 
-  if(diff<0){
-    el.style.transform =
-    `translateX(${diff}px)`;
-  }
+if(diff<0){
+el.style.transform =
+`translateX(${diff}px)`;
+}
 
 }
 
 function endTouch(e,el,id){
 
-  let endX =
-  e.changedTouches[0].clientX;
+let end =
+e.changedTouches[0].clientX;
 
-  let diff = endX - startX;
+let diff =
+end - startX;
 
-  if(diff < -120){
+if(diff < -120){
 
-    state[id].selected = false;
+state[id].selected=false;
 
-    saveState();
+saveState();
 
-    el.style.opacity = "0";
+el.style.opacity="0";
 
-    setTimeout(()=>{
-      generateSlip();
-      loadMatches(currentList);
-    },250);
+setTimeout(()=>{
+loadMatches(currentList);
+generateSlip();
+},250);
 
-  }else{
-    el.style.transform="translateX(0)";
-  }
+}else{
+el.style.transform="translateX(0)";
+}
 
 }
 
