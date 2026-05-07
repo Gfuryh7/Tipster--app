@@ -606,7 +606,7 @@ async function loadLiveMatches(){
 try{
 
 const response = await fetch(
-"https://v3.football.api-sports.io/fixtures?live=all",
+"https://v3.football.api-sports.io/fixtures?live=20",
 {
 headers:{
 "x-apisports-key": API_KEY
@@ -638,7 +638,6 @@ league: game.league.name
 currentList = [...allMatches];
 
 loadMatches(currentList);
-  loadLiveMatches();
 
 alert("🔥 Live matches loaded successfully");
 
@@ -747,6 +746,7 @@ l==="All"
 saveState();
 
 loadMatches(currentList);
+  loadLiveMatches();
 
 };
 
