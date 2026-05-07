@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tipster AI Ultimate</title>
+<title>Tipster AI Infinity</title>
 
 <style>
 
@@ -177,6 +177,35 @@ background:#101938;
 color:white;
 font-size:18px;
 outline:none;
+}
+
+/* COUNTER */
+
+.counterWrap{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 18px 18px;
+gap:12px;
+}
+
+.counter{
+padding:12px 18px;
+border-radius:20px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(14px);
+font-weight:bold;
+flex:1;
+}
+
+.clearBtn{
+padding:12px 18px;
+border-radius:18px;
+background:linear-gradient(135deg,#ff1744,#ff5252);
+border:none;
+color:white;
+font-weight:bold;
+cursor:pointer;
 }
 
 /* LEAGUES */
@@ -448,20 +477,6 @@ background:#131d44;
 cursor:pointer;
 }
 
-/* COUNTER */
-
-.counter{
-position:fixed;
-top:20px;
-right:18px;
-padding:12px 18px;
-border-radius:20px;
-background:rgba(0,0,0,0.4);
-backdrop-filter:blur(14px);
-font-weight:bold;
-z-index:50;
-}
-
 </style>
 </head>
 
@@ -476,8 +491,6 @@ z-index:50;
 </div>
 
 <div id="app">
-
-<div class="counter" id="counter">0 Selected</div>
 
 <div id="home" class="section activeSection">
 
@@ -496,6 +509,11 @@ z-index:50;
 <div class="targetBox">
 <div class="targetLabel">🎯 Target Odds</div>
 <input id="targetOdds" placeholder="Example: 10">
+</div>
+
+<div class="counterWrap">
+<div class="counter" id="counter">0 Selected</div>
+<button class="clearBtn" onclick="clearSelections()">Clear All</button>
 </div>
 
 <div class="leagues" id="leagueBar"></div>
@@ -549,7 +567,7 @@ z-index:50;
 <div class="navText">Home</div>
 </div>
 
-<div class="navItem" onclick="switchTab(this,'picks')">
+<div class="navItem" onclick="openSlipTab(this)">
 <div class="navIcon">📊</div>
 <div class="navText">Slip</div>
 </div>
@@ -627,6 +645,20 @@ let count = Object.values(state).filter(x=>x.selected).length;
 document.getElementById("counter").innerText = count + " Selected";
 }
 
+function clearSelections(){
+
+allMatches.forEach(m=>{
+state[m.id].selected = false;
+});
+
+saveState();
+
+loadMatches(currentList);
+
+showLoadArea();
+
+}
+
 const leagueBar = document.getElementById("leagueBar");
 
 leagues.forEach(l=>{
@@ -669,11 +701,6 @@ const matches = document.getElementById("matches");
 function loadMatches(list){
 
 matches.innerHTML="";
-
-if(list.length===0){
-matches.innerHTML='<div class="empty">No matches found</div>';
-return;
-}
 
 list.forEach(m=>{
 
@@ -882,12 +909,7 @@ generateSlip();
 
 }
 
-function generateSlip(){
-
-let selected =
-allMatches.filter(m=>state[m.id].selected);
-
-if(selected.length===0){
+function showLoadArea(){
 
 result.innerHTML = `
 
@@ -913,7 +935,16 @@ Load Slip Code
 
 `;
 
-switchTab(document.querySelectorAll(".navItem")[1],"picks");
+}
+
+function generateSlip(){
+
+let selected =
+allMatches.filter(m=>state[m.id].selected);
+
+if(selected.length===0){
+
+showLoadArea();
 
 return;
 
@@ -1161,6 +1192,21 @@ history.pushState({page:id},"",`#${id}`);
 
 }
 
+function openSlipTab(el){
+
+switchTab(el,'picks');
+
+let selected =
+allMatches.filter(m=>state[m.id].selected);
+
+if(selected.length===0){
+showLoadArea();
+}else{
+generateSlip();
+}
+
+}
+
 window.onpopstate = ()=>{
 
 let hash =
@@ -1229,6 +1275,8 @@ el.style.transform="translateX(0)";
 targetOdds.addEventListener("input",saveState);
 
 updateCounter();
+
+showLoadArea();
 
 </script>
 
