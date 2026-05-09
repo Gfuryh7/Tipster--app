@@ -1,596 +1,3 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tipster AI Infinity</title>
-
-<style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
-body{
-font-family:Arial,sans-serif;
-background:#050816;
-color:white;
-overflow-x:hidden;
-}
-
-/* BACKGROUND */
-
-.bg{
-position:fixed;
-inset:0;
-background:
-radial-gradient(circle at top left,#612cff55,transparent 30%),
-radial-gradient(circle at bottom right,#00b0ff44,transparent 35%),
-radial-gradient(circle at center,#ffffff11,transparent 50%),
-#050816;
-z-index:-3;
-}
-
-.stars{
-position:fixed;
-inset:0;
-background-image:radial-gradient(white 1px,transparent 1px);
-background-size:40px 40px;
-opacity:0.07;
-animation:moveStars 70s linear infinite;
-z-index:-2;
-}
-
-@keyframes moveStars{
-from{transform:translateY(0);}
-to{transform:translateY(-200px);}
-}
-
-/* SPLASH */
-
-#splash{
-position:fixed;
-inset:0;
-background:linear-gradient(135deg,#091024,#27185f);
-display:flex;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-z-index:9999;
-}
-
-.logo{
-width:130px;
-height:130px;
-border-radius:35px;
-display:flex;
-justify-content:center;
-align-items:center;
-font-size:64px;
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(20px);
-border:1px solid rgba(255,255,255,0.1);
-box-shadow:0 0 40px #2962ff66;
-animation:float 3s ease-in-out infinite;
-}
-
-@keyframes float{
-0%{transform:translateY(0);}
-50%{transform:translateY(-10px);}
-100%{transform:translateY(0);}
-}
-
-.splashTitle{
-margin-top:18px;
-font-size:36px;
-font-weight:bold;
-}
-
-/* APP */
-
-#app{
-display:none;
-padding-bottom:140px;
-}
-
-.section{
-display:none;
-}
-
-.activeSection{
-display:block;
-}
-
-/* HEADER */
-
-.header{
-padding:25px 20px 10px;
-}
-
-.title{
-font-size:34px;
-font-weight:bold;
-}
-
-.subtitle{
-margin-top:6px;
-color:#b5c0e8;
-}
-
-/* SEARCH */
-
-.searchWrap{
-padding:12px 18px;
-}
-
-.searchBox{
-position:relative;
-}
-
-.searchBox input{
-width:100%;
-padding:22px 20px 22px 58px;
-border:none;
-outline:none;
-border-radius:24px;
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(16px);
-color:white;
-font-size:17px;
-border:1px solid rgba(255,255,255,0.08);
-}
-
-.searchIcon{
-position:absolute;
-left:18px;
-top:18px;
-font-size:22px;
-opacity:0.8;
-}
-
-/* TARGET */
-
-.targetBox{
-margin:0 18px 18px;
-padding:20px;
-border-radius:28px;
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(16px);
-border:1px solid rgba(255,255,255,0.08);
-}
-
-.targetLabel{
-margin-bottom:12px;
-font-size:15px;
-color:#dfe6ff;
-}
-
-.targetBox input{
-width:100%;
-padding:18px;
-border:none;
-border-radius:18px;
-background:#101938;
-color:white;
-font-size:18px;
-outline:none;
-}
-
-/* COUNTER */
-
-.counterWrap{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:0 18px 18px;
-gap:12px;
-}
-
-.counter{
-padding:12px 18px;
-border-radius:20px;
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(14px);
-font-weight:bold;
-flex:1;
-}
-
-.clearBtn{
-padding:12px 18px;
-border-radius:18px;
-background:linear-gradient(135deg,#ff1744,#ff5252);
-border:none;
-color:white;
-font-weight:bold;
-cursor:pointer;
-}
-
-/* LEAGUES */
-
-.leagues{
-display:flex;
-overflow-x:auto;
-gap:12px;
-padding:5px 18px 20px;
-}
-
-.leagues::-webkit-scrollbar{
-display:none;
-}
-
-.league{
-padding:14px 22px;
-border-radius:20px;
-white-space:nowrap;
-background:rgba(255,255,255,0.08);
-border:1px solid rgba(255,255,255,0.08);
-font-weight:bold;
-cursor:pointer;
-transition:0.3s;
-}
-
-.activeLeague{
-background:linear-gradient(135deg,#2962ff,#00b0ff);
-box-shadow:0 0 25px #2962ff66;
-}
-
-/* MATCH */
-
-#matches{
-padding:0 14px;
-}
-
-.match{
-margin-bottom:18px;
-padding:22px;
-border-radius:30px;
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(18px);
-border:1px solid rgba(255,255,255,0.08);
-transition:0.25s;
-position:relative;
-overflow:hidden;
-}
-
-.match.selected{
-border:2px solid #00b0ff;
-box-shadow:0 0 25px #2962ff66;
-}
-
-.matchTitle{
-font-size:20px;
-font-weight:bold;
-}
-
-.matchBottom{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-top:16px;
-}
-
-.pick{
-padding:12px 16px;
-border-radius:14px;
-background:#111c42;
-cursor:pointer;
-}
-
-.odds{
-font-size:20px;
-font-weight:bold;
-color:#00d4ff;
-}
-
-/* BUTTONS */
-
-.actionButtons{
-padding:10px 18px;
-}
-
-button{
-width:100%;
-padding:20px;
-border:none;
-border-radius:24px;
-font-size:17px;
-font-weight:bold;
-cursor:pointer;
-color:white;
-margin-top:14px;
-}
-
-.generateBtn{
-background:linear-gradient(135deg,#2962ff,#00b0ff);
-}
-
-.smartBtn{
-background:linear-gradient(135deg,#7b1fff,#ba68ff);
-}
-
-.altBtn{
-background:linear-gradient(135deg,#00b894,#00cec9);
-}
-
-/* RESULT */
-
-.result{
-margin:18px;
-padding:22px;
-border-radius:30px;
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(18px);
-border:1px solid rgba(255,255,255,0.08);
-}
-
-.slipCard{
-margin-bottom:20px;
-padding:18px;
-border-radius:24px;
-background:#0f1836;
-}
-
-.slipHeader{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:16px;
-}
-
-.badge{
-padding:8px 14px;
-border-radius:20px;
-font-size:12px;
-font-weight:bold;
-}
-
-.safe{
-background:#00c85322;
-color:#69f0ae;
-}
-
-.balance{
-background:#ffab0022;
-color:#ffd54f;
-}
-
-.risky{
-background:#ff174422;
-color:#ff8a80;
-}
-
-.slipItem{
-padding:14px;
-border-radius:18px;
-background:#151f45;
-margin-bottom:12px;
-position:relative;
-transition:0.3s;
-}
-
-.swipeHint{
-position:absolute;
-right:12px;
-top:12px;
-font-size:11px;
-color:#ff8a80;
-}
-
-.total{
-margin-top:16px;
-font-size:20px;
-font-weight:bold;
-color:#00d4ff;
-}
-
-.codeArea{
-margin-top:20px;
-padding:18px;
-border-radius:20px;
-background:#101938;
-}
-
-.codeInput{
-width:100%;
-padding:18px;
-border:none;
-border-radius:16px;
-background:#17234d;
-color:white;
-margin-top:12px;
-font-size:16px;
-outline:none;
-}
-
-.empty{
-padding:50px 20px;
-text-align:center;
-color:#b5c0e8;
-}
-
-/* NAV */
-
-.nav{
-position:fixed;
-left:12px;
-right:12px;
-bottom:14px;
-height:90px;
-border-radius:30px;
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(20px);
-display:flex;
-justify-content:space-around;
-align-items:center;
-border:1px solid rgba(255,255,255,0.08);
-z-index:100;
-}
-
-.navItem{
-flex:1;
-text-align:center;
-color:#c5d1ff;
-cursor:pointer;
-transition:0.25s;
-}
-
-.activeNav{
-color:#00d4ff;
-transform:translateY(-3px);
-}
-
-.navIcon{
-font-size:28px;
-}
-
-.navText{
-font-size:13px;
-margin-top:5px;
-}
-
-/* POPUP */
-
-.popup{
-position:fixed;
-left:0;
-right:0;
-bottom:-600px;
-padding:24px;
-background:#0b1330;
-border-radius:35px 35px 0 0;
-transition:0.35s;
-z-index:1000;
-}
-
-.popup.show{
-bottom:0;
-}
-
-.option{
-margin-top:14px;
-padding:18px;
-border-radius:18px;
-background:#131d44;
-cursor:pointer;
-}
-
-</style>
-</head>
-
-<body>
-
-<div class="bg"></div>
-<div class="stars"></div>
-
-<div id="splash">
-<div class="logo">🃏</div>
-<div class="splashTitle">Tipster AI</div>
-</div>
-
-<div id="app">
-
-<div id="home" class="section activeSection">
-
-<div class="header">
-<div class="title">Tipster AI</div>
-<div class="subtitle">Premium betting intelligence</div>
-</div>
-
-<div class="searchWrap">
-<div class="searchBox">
-<div class="searchIcon">🔍</div>
-<input placeholder="Search teams..." oninput="searchMatch(this.value)">
-</div>
-</div>
-
-<div class="targetBox">
-<div class="targetLabel">🎯 Target Odds</div>
-<input id="targetOdds" placeholder="Example: 10">
-</div>
-
-<div class="counterWrap">
-<div class="counter" id="counter">0 Selected</div>
-<button class="clearBtn" onclick="clearSelections()">Clear All</button>
-</div>
-
-<div class="leagues" id="leagueBar"></div>
-
-<div id="matches"></div>
-
-<div class="actionButtons">
-<button class="generateBtn" onclick="generateSlip()">Generate Slip</button>
-<button class="smartBtn" onclick="smartGenerate()">🧠 Smart Slip</button>
-</div>
-
-</div>
-
-<div id="picks" class="section">
-
-<div class="header">
-<div class="title">Slip Center</div>
-<div class="subtitle">Safe • Balanced • Aggressive</div>
-</div>
-
-<div id="result" class="result"></div>
-
-</div>
-
-<div id="chat" class="section">
-<div class="result">💬 Community sharing coming soon</div>
-</div>
-
-<div id="bot" class="section">
-<div class="result">🤖 AI predictions coming soon</div>
-</div>
-
-<div id="settings" class="section">
-<div class="result">
-⚙️ Settings & API area
-<br><br>
-✔ Persistent saves
-<br>
-✔ Smart odds engine
-<br>
-✔ Slip codes enabled
-</div>
-</div>
-
-</div>
-
-<div class="nav">
-
-<div class="navItem activeNav" onclick="switchTab(this,'home')">
-<div class="navIcon">🏠</div>
-<div class="navText">Home</div>
-</div>
-
-<div class="navItem" onclick="openSlipTab(this)">
-<div class="navIcon">📊</div>
-<div class="navText">Slip</div>
-</div>
-
-<div class="navItem" onclick="switchTab(this,'chat')">
-<div class="navIcon">💬</div>
-<div class="navText">Chat</div>
-</div>
-
-<div class="navItem" onclick="switchTab(this,'bot')">
-<div class="navIcon">🤖</div>
-<div class="navText">Bot</div>
-</div>
-
-<div class="navItem" onclick="switchTab(this,'settings')">
-<div class="navIcon">⚙️</div>
-<div class="navText">Settings</div>
-</div>
-
-</div>
-
-<div id="popup" class="popup"></div>
-
 <script>
 
 setTimeout(()=>{
@@ -599,26 +6,34 @@ document.getElementById("app").style.display="block";
 },1800);
 
 const leagues = ["All","Premier","La Liga","Bundesliga"];
-  const API_KEY = "3321a46c9f3453c2ece736b4f1afd08331b5892e85f288331e0958f00a1d816b";
+
+const API_KEY = "PASTE_YOUR_REAL_API_KEY_HERE";
 
 async function loadLiveMatches(){
 
 try{
 
+console.log("Loading live matches...");
+
 const response = await fetch(
-"https://v3.football.api-sports.io/fixtures?live=10",
+"https://v3.football.api-sports.io/fixtures?live=all",
 {
+method:"GET",
 headers:{
 "x-apisports-key": API_KEY
 }
 }
 );
 
-const data = await response.json();
-  alert(JSON.stringify(data));
-console.log(data);
+console.log("HTTP STATUS:", response.status);
 
-console.log("LIVE API DATA:", data);
+const text = await response.text();
+
+console.log("RAW RESPONSE:", text);
+
+const data = JSON.parse(text);
+
+console.log("PARSED DATA:", data);
 
 if(data.response && data.response.length > 0){
 
@@ -645,15 +60,15 @@ alert("🔥 Live matches loaded successfully");
 
 }else{
 
-alert("⚠️ No matches found");
+alert("⚠️ No live matches found");
 
 }
 
 }catch(err){
 
-console.error(err);
+console.log("FULL ERROR:", err);
 
-alert("❌ API connection failed");
+alert("❌ CHECK CONSOLE LOGS");
 
 }
 
@@ -748,7 +163,8 @@ l==="All"
 saveState();
 
 loadMatches(currentList);
-  loadLiveMatches();
+
+loadLiveMatches();
 
 };
 
@@ -1339,6 +755,3 @@ updateCounter();
 showLoadArea();
 
 </script>
-
-</body>
-</html>
